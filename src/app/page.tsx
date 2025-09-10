@@ -1,5 +1,6 @@
 "use client";
 import { CopyUrlDialog } from "@/components/CopyUrlDialog";
+import { Footer } from "@/components/Footer";
 import { Form } from "@/components/Form";
 import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/Card";
@@ -23,6 +24,7 @@ export default function Home() {
       <Card>
         <Form />
       </Card>
+      <Footer />
     </main>
   );
 }
