@@ -1,17 +1,16 @@
-import { link } from "fs";
 import Link from "next/link";
-import { Button } from "./ui/Button";
 import { IconBrandGithub } from "@tabler/icons-react";
 
 const navLinks = [
   {
+    label: "Shorten",
+    link: "/",
+  },
+  {
     label: "About",
     link: "/about",
   },
-  {
-    label: "Create",
-    link: "/create",
-  },
+
   {
     label: "Links",
     link: "/links",
