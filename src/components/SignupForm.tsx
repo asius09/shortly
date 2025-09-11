@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "./ui/Button";
 import { Card, CardDescription, CardTitle } from "./ui/Card";
 import { Input } from "./ui/Input";
-import { SignupFormSchema } from "@/schemas/signupForm.schema";
+import { SignupFormSchema } from "@/schema/signupForm.schema";
 import { IconLoader } from "@tabler/icons-react";
 import { errorHandler, handleZodErros } from "@/utils/errorHandler";
 import { useToast } from "./ui/Toast";
@@ -56,7 +56,7 @@ export const SignupForm = () => {
         type: "success",
       });
     } catch (err: unknown) {
-      let fieldErrors = handleZodErros(err);
+      const fieldErrors = handleZodErros(err);
       console.log(fieldErrors);
       if (Object.keys(fieldErrors).length > 0) {
         setErrors(fieldErrors);
@@ -80,7 +80,7 @@ export const SignupForm = () => {
       <CardTitle>Sign Up for Shortly</CardTitle>
       <CardDescription>Create your account to get started.</CardDescription>
       <form className="w-full" onSubmit={handleSubmit} noValidate>
-        <div className="w-full space-y-4">
+        <div className="w-full space-y-3">
           <Input
             label="Full Name"
             placeholder="Enter Your Name"
@@ -115,7 +115,7 @@ export const SignupForm = () => {
             error={errors.password}
           />
           <Button
-            className="flex w-full items-center justify-center"
+            className="mt-2 flex w-full items-center justify-center"
             type="submit"
             disabled={submitting}
           >
@@ -128,14 +128,14 @@ export const SignupForm = () => {
               "Sign Up"
             )}
           </Button>
-          <div className="mt-2 flex justify-end">
-            <Link
-              href="/login"
-              className="text-sm text-blue-600 hover:underline dark:text-blue-400"
-            >
-              Already have an account?
-            </Link>
-          </div>
+        </div>
+        <div className="mt-2 flex justify-end">
+          <Link
+            href="/login"
+            className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+          >
+            Already have an account?
+          </Link>
         </div>
       </form>
       <div className="my-2 w-full border-[0.25px] border-neutral-600" />

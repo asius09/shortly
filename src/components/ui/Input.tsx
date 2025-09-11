@@ -11,15 +11,25 @@ type InputBaseProps = {
 };
 
 type InputProps =
-  | (Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> &
+  | (Omit<
+      React.InputHTMLAttributes<HTMLInputElement>,
+      "type" | "value" | "placeholder"
+    > &
       InputBaseProps & {
         as?: "input";
         type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
+        value?: string;
+        placeholder?: string;
         autoResize?: never;
       })
-  | (React.TextareaHTMLAttributes<HTMLTextAreaElement> &
+  | (Omit<
+      React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+      "value" | "placeholder"
+    > &
       InputBaseProps & {
         as: "textarea";
+        value?: string;
+        placeholder?: string;
         autoResize?: boolean;
       });
 
@@ -35,17 +45,56 @@ export const Input = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Extract value, placeholder, and type from props safely
-  let value: any, placeholder: any, type: any, restProps: any;
+  // Extract value, placeholder, and type from props safely and strictly typed
+  let value: string | undefined;
+  let placeholder: string | undefined;
+  let type: string | undefined;
+
+  // The rest of the props, strictly typed
+  let restProps:
+    | Omit<
+        React.InputHTMLAttributes<HTMLInputElement>,
+        "type" | "value" | "placeholder"
+      >
+    | Omit<
+        React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+        "value" | "placeholder"
+      >;
+
   if (as === "textarea") {
-    ({ value, placeholder, ...restProps } =
-      props as React.TextareaHTMLAttributes<HTMLTextAreaElement>);
+    const {
+      value: v,
+      placeholder: p,
+      ...rest
+    } = props as Omit<
+      React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+      "value" | "placeholder"
+    > & {
+      value?: string;
+      placeholder?: string;
+    };
+    value = v;
+    placeholder = p;
     type = undefined;
+    restProps = rest;
   } else {
-    ({ value, placeholder, type, ...restProps } = props as Omit<
+    const {
+      value: v,
+      placeholder: p,
+      type: t,
+      ...rest
+    } = props as Omit<
       React.InputHTMLAttributes<HTMLInputElement>,
-      "type"
-    > & { type?: React.InputHTMLAttributes<HTMLInputElement>["type"] });
+      "type" | "value" | "placeholder"
+    > & {
+      type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
+      value?: string;
+      placeholder?: string;
+    };
+    value = v;
+    placeholder = p;
+    type = t;
+    restProps = rest;
   }
 
   useEffect(() => {
@@ -80,7 +129,7 @@ export const Input = ({
       className={cn("flex w-full flex-col gap-1 sm:gap-2", containerClassName)}
     >
       {label && (
-        <label className="mb-1 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
           {label}
         </label>
       )}
@@ -90,21 +139,26 @@ export const Input = ({
           className={cn(
             sharedClassName,
             "max-h-60 min-h-[40px] resize-none overflow-y-auto",
-            "sm:text-base",
           )}
           rows={1}
           value={value}
           placeholder={placeholder}
-          {...(restProps as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+          {...(restProps as Omit<
+            React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+            "value" | "placeholder"
+          >)}
         />
       ) : type === "password" ? (
         <div className="relative w-full">
           <input
-            className={cn(sharedClassName, "h-10 pr-10 sm:h-12 sm:text-base")}
+            className={cn(sharedClassName, "h-10 pr-10")}
             value={value}
             placeholder={placeholder}
             type={showPassword ? "text" : "password"}
-            {...(restProps as React.InputHTMLAttributes<HTMLInputElement>)}
+            {...(restProps as Omit<
+              React.InputHTMLAttributes<HTMLInputElement>,
+              "type" | "value" | "placeholder"
+            >)}
           />
           <button
             type="button"
@@ -125,11 +179,14 @@ export const Input = ({
         </div>
       ) : (
         <input
-          className={cn(sharedClassName, "h-10 sm:h-12 sm:text-base")}
+          className={cn(sharedClassName, "h-10")}
           value={value}
           placeholder={placeholder}
           type={type}
-          {...(restProps as React.InputHTMLAttributes<HTMLInputElement>)}
+          {...(restProps as Omit<
+            React.InputHTMLAttributes<HTMLInputElement>,
+            "type" | "value" | "placeholder"
+          >)}
         />
       )}
       <div

@@ -4,7 +4,7 @@ import { Button } from "./ui/Button";
 import { Card, CardDescription, CardTitle } from "./ui/Card";
 import { Input } from "./ui/Input";
 import { useState } from "react";
-import { LoginFormSchema } from "@/schemas/loginForm.schema";
+import { LoginFormSchema } from "@/schema/loginForm.schema";
 import { errorHandler, handleZodErros } from "@/utils/errorHandler";
 import { useToast } from "./ui/Toast";
 
@@ -81,7 +81,7 @@ export const LoginForm = () => {
       <CardTitle>Login to Shortly</CardTitle>
       <CardDescription>Please enter your credentials.</CardDescription>
       <form onSubmit={handleSubmit} className="w-full" noValidate>
-        <div className="w-full space-y-4">
+        <div className="w-full space-y-3">
           <Input
             label="Email"
             placeholder="Enter Your Email"
@@ -105,20 +105,20 @@ export const LoginForm = () => {
           <Button className="w-full" type="submit">
             Login
           </Button>
-          <div className="mt-2 flex justify-end">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-blue-600 hover:underline dark:text-blue-400"
-            >
-              Forgot password?
-            </Link>
-          </div>
+        </div>
+        <div className="mt-2 flex justify-end">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+          >
+            Forgot password?
+          </Link>
         </div>
       </form>
       <div className="my-2 w-full border-[0.25px] border-neutral-600" />
       <div className="mt-4 flex w-full flex-col items-center justify-center gap-2 text-sm">
         <span className="text-neutral-600 dark:text-neutral-300">
-          Don't have an account?
+          Don&apos;t have an account?
         </span>
         <Link href="/signup" className="w-full">
           <Button variant="outline" type="button" className="w-full">

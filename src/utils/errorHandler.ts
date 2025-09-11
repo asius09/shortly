@@ -19,6 +19,7 @@ export const errorHandler = (err: unknown): string => {
 };
 
 export const handleZodErros = (err: unknown): { [key: string]: string } => {
+  // eslint-disable-next-line prefer-const
   let fieldErrors: { [key: string]: string } = {};
   if (err instanceof z.ZodError) {
     const errors = err.issues;

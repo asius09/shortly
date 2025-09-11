@@ -1,13 +1,9 @@
 "use client";
-import { CopyUrlDialog } from "@/components/CopyUrlDialog";
-import { Footer } from "@/components/Footer";
-import { Form } from "@/components/Form";
-import { Header } from "@/components/Header";
-import { Card } from "@/components/ui/Card";
-import { useDialog } from "@/components/ui/Dialog";
+// import { CopyUrlDialog } from "@/components/CopyUrlDialog";
+import { ShortendedForm } from "@/components/ShortendedForm";
 
 export default function Home() {
-  const { close, isOpen, open } = useDialog();
+  // const { close, isOpen, open } = useDialog();
   // open({
   //   title: "Shortened URL Copied!",
   //   subTitle:
@@ -16,15 +12,8 @@ export default function Home() {
   // });
 
   return (
-    <main
-      id="shortly-app"
-      className="min-svh relative mx-auto flex h-dvh max-h-screen w-full max-w-4xl items-center justify-center"
-    >
-      <Header />
-      <Card>
-        <Form />
-      </Card>
-      <Footer />
-    </main>
+    <div className="flex h-full w-full items-center justify-center">
+      <ShortendedForm />
+    </div>
   );
 }

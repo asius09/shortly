@@ -22,7 +22,7 @@ export const Header = () => {
     <header className="fixed top-0 left-0 flex min-h-14 w-full max-w-screen min-w-sm items-center border-b-[0.25px] border-zinc-700 py-4 md:py-0 dark:border-zinc-600">
       <nav className="mx-auto flex w-full max-w-4xl items-center justify-between">
         {/* Left: Logo */}
-        <div className="flex-1 flex items-center">
+        <div className="flex flex-1 items-center">
           <Link
             href="/"
             className="text-xl font-semibold text-neutral-900 dark:text-neutral-100"
@@ -31,7 +31,7 @@ export const Header = () => {
           </Link>
         </div>
         {/* Center: Nav Links */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex flex-1 items-center justify-center">
           <div className="flex items-center gap-8">
             {navLinks.map((navLink) => (
               <Link
@@ -45,7 +45,10 @@ export const Header = () => {
           </div>
         </div>
         {/* Right: Icons and Auth */}
-        <div className="flex-1 flex items-center justify-end gap-2" id="links-icons">
+        <div
+          className="flex flex-1 items-center justify-end gap-2"
+          id="links-icons"
+        >
           <Link
             href="https://github.com/asius09/shortly"
             target="_blank"
@@ -59,14 +62,17 @@ export const Header = () => {
             <Link href="/login">
               <Button
                 variant="outline"
-                className="px-3 py-1 text-sm font-medium w-20"
+                className="w-20 px-3 py-1 text-sm font-medium"
                 type="button"
               >
                 Login
               </Button>
             </Link>
             <Link href="/signup">
-              <Button className="px-3 py-1 text-sm font-medium w-20" type="button">
+              <Button
+                className="w-20 px-3 py-1 text-sm font-medium"
+                type="button"
+              >
                 Sign Up
               </Button>
             </Link>

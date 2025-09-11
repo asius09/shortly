@@ -34,7 +34,7 @@ export function CardDescription({
   return (
     <p
       className={cn(
-        "mb-6 block text-center text-base font-medium text-neutral-700 dark:text-neutral-300",
+        "mb-6 block text-center text-sm font-medium text-neutral-700 dark:text-neutral-300",
         className,
       )}
       tabIndex={0}
@@ -54,12 +54,11 @@ export function Card({ children, className, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        [
-          "h-fit w-fit max-w-lg min-w-md rounded-2xl border p-5",
-          "border-neutral-200 bg-neutral-100 shadow-lg shadow-neutral-200/60",
-          "dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-2xl dark:shadow-white/4",
-          "flex flex-col items-center justify-center",
-        ].join(" "),
+        "h-auto w-md max-w-lg min-w-sm",
+        "rounded-2xl border p-4",
+        "border-neutral-200 bg-neutral-100 shadow-lg shadow-neutral-200/60",
+        "dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-2xl dark:shadow-white/4",
+        "flex flex-col items-center justify-center",
         className,
       )}
       {...props}
