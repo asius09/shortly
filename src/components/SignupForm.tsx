@@ -1,22 +1,96 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "./ui/Button";
 import { Card, CardDescription, CardTitle } from "./ui/Card";
 import { Input } from "./ui/Input";
+import { SignupFormSchema } from "@/schemas/signupForm.schema";
+import { IconLoader } from "@tabler/icons-react";
+import { errorHandler, handleZodErros } from "@/utils/errorHandler";
+import { useToast } from "./ui/Toast";
 
 export const SignupForm = () => {
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+  const { addToast } = useToast();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+    }));
+    console.log("Input changed:", e.target.name, e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setErrors({});
+    console.log("Submitting form with values:", form);
+    try {
+      // Validate with zod
+      SignupFormSchema.parse(form);
+      console.log("Validation successful");
+      // TODO: handle actual signup logic here (API call, etc.)
+      // For now, just reset form
+      setTimeout(() => {
+        setForm({
+          fullName: "",
+          email: "",
+          password: "",
+        });
+        console.log("Form reset after signup simulation");
+      }, 1000);
+      addToast({
+        id: Date.now(),
+        message: "Sign Up Successfully! Logging you in.",
+        type: "success",
+      });
+    } catch (err: unknown) {
+      let fieldErrors = handleZodErros(err);
+      console.log(fieldErrors);
+      if (Object.keys(fieldErrors).length > 0) {
+        setErrors(fieldErrors);
+      } else {
+        const general = errorHandler(err);
+        setErrors((prev) => ({ ...prev, general: general }));
+        addToast({
+          id: Date.now(),
+          message: general,
+          type: "error",
+        });
+      }
+    } finally {
+      setSubmitting(false);
+      console.log("Submitting state set to false");
+    }
+  };
+
   return (
     <Card>
       <CardTitle>Sign Up for Shortly</CardTitle>
       <CardDescription>Create your account to get started.</CardDescription>
-      <form className="w-full">
-        <div className="w-full">
+      <form className="w-full" onSubmit={handleSubmit} noValidate>
+        <div className="w-full space-y-4">
           <Input
-            label="Name"
+            label="Full Name"
             placeholder="Enter Your Name"
             type="text"
-            name="name"
+            name="fullName"
             autoComplete="name"
             required
+            value={form.fullName}
+            onChange={handleChange}
+            error={errors.fullName}
           />
           <Input
             label="Email"
@@ -25,6 +99,9 @@ export const SignupForm = () => {
             name="email"
             autoComplete="email"
             required
+            value={form.email}
+            onChange={handleChange}
+            error={errors.email}
           />
           <Input
             label="Password"
@@ -33,9 +110,23 @@ export const SignupForm = () => {
             name="password"
             autoComplete="new-password"
             required
+            value={form.password}
+            onChange={handleChange}
+            error={errors.password}
           />
-          <Button className="w-full" type="submit">
-            Sign Up
+          <Button
+            className="flex w-full items-center justify-center"
+            type="submit"
+            disabled={submitting}
+          >
+            {submitting ? (
+              <>
+                <IconLoader className="animate-spin" />
+                Signing Up...
+              </>
+            ) : (
+              "Sign Up"
+            )}
           </Button>
           <div className="mt-2 flex justify-end">
             <Link

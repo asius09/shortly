@@ -1,19 +1,87 @@
+"use client";
 import Link from "next/link";
 import { Button } from "./ui/Button";
 import { Card, CardDescription, CardTitle } from "./ui/Card";
 import { Input } from "./ui/Input";
+import { useState } from "react";
+import { LoginFormSchema } from "@/schemas/loginForm.schema";
+import { errorHandler, handleZodErros } from "@/utils/errorHandler";
+import { useToast } from "./ui/Toast";
 
 export const LoginForm = () => {
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+  const { addToast } = useToast();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleInputs = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const key = e.target.name;
+    const value = e.target.value;
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => ({
+      ...prev,
+      [key]: "",
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Login form submitted with values:", form);
+    setLoading(true);
+    setErrors({});
+    try {
+      console.log("Handling Submitting Login Form");
+      const parsed = LoginFormSchema.parse(form);
+      console.log("Validation successful:", parsed);
+
+      setTimeout(() => {
+        setForm({
+          email: "",
+          password: "",
+        });
+        console.log("Form reset after login simulation");
+        addToast({
+          id: Date.now(),
+          message: "Logged in successfully!",
+          type: "success",
+        });
+      }, 2000);
+    } catch (err: unknown) {
+      console.log("Error during login submit:", err);
+      const fieldErrors = handleZodErros(err);
+      if (Object.keys(fieldErrors).length > 0) {
+        console.log("Field errors found:", fieldErrors);
+        setErrors(fieldErrors);
+        addToast({
+          id: Date.now(),
+          message: "Please fix the highlighted errors.",
+          type: "error",
+        });
+      } else {
+        const general = errorHandler(err);
+        console.log("General error:", general);
+        setErrors((prev) => ({ ...prev, general }));
+        addToast({
+          id: Date.now(),
+          message: general,
+          type: "error",
+        });
+      }
+    } finally {
+      setLoading(false);
+      console.log("Loading state set to false");
+    }
+  };
+
   return (
     <Card>
       <CardTitle>Login to Shortly</CardTitle>
       <CardDescription>Please enter your credentials.</CardDescription>
-      <form
-        action="
-        "
-        className="w-full"
-      >
-        <div className="w-full">
+      <form onSubmit={handleSubmit} className="w-full" noValidate>
+        <div className="w-full space-y-4">
           <Input
             label="Email"
             placeholder="Enter Your Email"
@@ -21,6 +89,8 @@ export const LoginForm = () => {
             name="email"
             autoComplete="email"
             required
+            onChange={handleInputs}
+            error={errors.email}
           />
           <Input
             label="Password"
@@ -29,6 +99,8 @@ export const LoginForm = () => {
             name="password"
             autoComplete="current-password"
             required
+            onChange={handleInputs}
+            error={errors.password}
           />
           <Button className="w-full" type="submit">
             Login
