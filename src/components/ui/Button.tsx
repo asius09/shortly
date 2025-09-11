@@ -1,6 +1,6 @@
 import { cn } from "@/utils/cn";
 
-export type ButtonVariant = "default" | "secondary" | "ghost";
+export type ButtonVariant = "default" | "secondary" | "ghost" | "outline";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,6 +14,8 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-neutral-200 text-neutral-900 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700",
   ghost:
     "bg-transparent text-neutral-900 hover:bg-neutral-100 dark:text-neutral-100 dark:hover:bg-neutral-800",
+  outline:
+    "bg-transparent border border-neutral-300 text-neutral-900 hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-800",
 };
 
 export const Button = ({
