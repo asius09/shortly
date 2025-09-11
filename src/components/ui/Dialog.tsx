@@ -1,17 +1,17 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Card } from "./Card";
+import { Card, CardDescription, CardTitle } from "./Card";
 
 interface DialogContextType {
   open: (options?: {
     title?: string;
-    subTitle?: string;
+    description?: string;
     content?: ReactNode;
   }) => void;
   close: () => void;
   isOpen: boolean;
   title?: string;
-  subTitle?: string;
+  description?: string;
   content?: ReactNode;
 }
 
@@ -32,16 +32,16 @@ interface DialogProviderProps {
 export const DialogProvider = ({ children }: DialogProviderProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState<string | undefined>(undefined);
-  const [subTitle, setSubTitle] = useState<string | undefined>(undefined);
+  const [description, setDescription] = useState<string | undefined>(undefined);
   const [content, setContent] = useState<ReactNode>(null);
 
   const open = (options?: {
     title?: string;
-    subTitle?: string;
+    description?: string;
     content?: ReactNode;
   }) => {
     setTitle(options?.title);
-    setSubTitle(options?.subTitle);
+    setDescription(options?.description);
     setContent(options?.content ?? null);
     setIsOpen(true);
   };
@@ -49,13 +49,13 @@ export const DialogProvider = ({ children }: DialogProviderProps) => {
   const close = () => {
     setIsOpen(false);
     setTitle(undefined);
-    setSubTitle(undefined);
+    setDescription(undefined);
     setContent(null);
   };
 
   return (
     <DialogContext.Provider
-      value={{ open, close, isOpen, title, subTitle, content }}
+      value={{ open, close, isOpen, title, description, content }}
     >
       {children}
       {isOpen && (
@@ -64,7 +64,9 @@ export const DialogProvider = ({ children }: DialogProviderProps) => {
           onClick={close}
         >
           <div onClick={(e) => e.stopPropagation()}>
-            <Card title={title ?? ""} subTitle={subTitle ?? ""}>
+            <Card>
+              <CardTitle>{title}</CardTitle>
+              <CardDescription>{description}</CardDescription>
               {content}
             </Card>
           </div>
@@ -78,13 +80,15 @@ export const DialogProvider = ({ children }: DialogProviderProps) => {
 interface DialogProps {
   children: React.ReactNode;
   title: string;
-  subTitle: string;
+  description: string;
 }
 
-export const Dialog = ({ children, title, subTitle }: DialogProps) => {
+export const Dialog = ({ children, title, description }: DialogProps) => {
   return (
     <div className="bg-background/20 fixed inset-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-[4px]">
-      <Card title={title} subTitle={subTitle}>
+      <Card>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
         {children}
       </Card>
     </div>
