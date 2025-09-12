@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-::selection,
-::-moz-selection {
-  @apply bg-neutral-900 text-neutral-50 dark:bg-neutral-50 dark:text-neutral-900;
-}
