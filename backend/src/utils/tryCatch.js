@@ -1,4 +1,4 @@
-exports.tryCatch = (fn) => {
+const tryCatch = (fn) => {
   return async (req, res, next) => {
     try {
       await fn(req, res, next);
@@ -7,13 +7,4 @@ exports.tryCatch = (fn) => {
     }
   };
 };
-
-exports.tryCatchAsync = (fn, onError) => {
-  return async (req, res, next) => {
-    try {
-      await fn(req, res, next);
-    } catch (error) {
-      onError(error);
-    }
-  };
-};
+module.exports = tryCatch;
