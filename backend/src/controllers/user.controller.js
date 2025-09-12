@@ -1,4 +1,4 @@
-const { Status, StatusCode } = require('../constant');
+const { Status, StatusCode, ErrorMessages } = require('../constant');
 const createError = require('../helper/createError');
 const User = require('../models/user.model');
 const tryCatch = require('../utils/tryCatch');
@@ -24,7 +24,7 @@ const handleSignup = tryCatch(async (req, res) => {
   const responseData = {
     status: Status.SUCCESS,
     statusCode: StatusCode.CREATED,
-    message: 'User registered and logged in successfully',
+    message: ErrorMessages.SIGNUP_SUCCESS,
     data: {
       user: {
         id: createdUser._id,
@@ -55,7 +55,7 @@ const handleLogin = tryCatch(async (req, res) => {
       email,
     );
     throw createError({
-      message: 'No User Found, Please Signup First',
+      message: ErrorMessages.NO_USER_FOUND,
       status: Status.FAILED,
       statusCode: StatusCode.NOT_FOUND,
       errorDetails: null,
@@ -73,7 +73,7 @@ const handleLogin = tryCatch(async (req, res) => {
       email,
     );
     throw createError({
-      message: 'Incorrect Password',
+      message: ErrorMessages.INCORRECT_PASSWORD,
       status: Status.FAILED,
       statusCode: StatusCode.UNAUTHORIZED,
       errorDetails: null,
@@ -87,7 +87,7 @@ const handleLogin = tryCatch(async (req, res) => {
   const responseData = {
     status: Status.SUCCESS,
     statusCode: StatusCode.OK,
-    message: 'logged in successfully',
+    message: ErrorMessages.LOGIN_SUCCESS,
     data: {
       user: {
         id: foundedUser._id,
@@ -122,7 +122,7 @@ const handleLogout = tryCatch(async (req, res) => {
       '[USER CONTROLLERS] - handleLogout: No user ID provided in params',
     );
     throw createError({
-      message: 'User ID is required for logout',
+      message: ErrorMessages.USER_ID_REQUIRED,
       status: Status.FAILED,
       statusCode: StatusCode.BAD_REQUEST,
       errorDetails: null,
@@ -146,7 +146,7 @@ const handleLogout = tryCatch(async (req, res) => {
       userId,
     );
     throw createError({
-      message: 'No User Found, Please Signup First',
+      message: ErrorMessages.NO_USER_FOUND,
       status: Status.FAILED,
       statusCode: StatusCode.NOT_FOUND,
       errorDetails: null,
@@ -165,7 +165,7 @@ const handleLogout = tryCatch(async (req, res) => {
 
   const responseData = {
     clearCookies: true,
-    message: 'Logout Successfully',
+    message: ErrorMessages.LOGOUT_SUCCESS,
     status: Status.SUCCESS,
     statusCode: StatusCode.OK,
   };
@@ -193,7 +193,7 @@ const handleDelete = tryCatch(async (req, res) => {
       '[USER CONTROLLERS] - handleDelete: No user ID provided in params',
     );
     throw createError({
-      message: 'User ID is required for delete',
+      message: ErrorMessages.USER_ID_REQUIRED,
       status: Status.FAILED,
       statusCode: StatusCode.BAD_REQUEST,
       errorDetails: null,
@@ -211,7 +211,7 @@ const handleDelete = tryCatch(async (req, res) => {
       userId,
     );
     throw createError({
-      message: 'No User Found',
+      message: ErrorMessages.NO_USER_FOUND,
       status: Status.FAILED,
       statusCode: StatusCode.NOT_FOUND,
       errorDetails: null,
@@ -219,7 +219,7 @@ const handleDelete = tryCatch(async (req, res) => {
   }
   const responseData = {
     clearCookies: true,
-    message: 'Deleted Successfully',
+    message: ErrorMessages.DELETE_SUCCESS,
     status: Status.SUCCESS,
     statusCode: StatusCode.OK,
   };

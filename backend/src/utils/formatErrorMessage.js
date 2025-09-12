@@ -104,7 +104,7 @@ const isPrimitiveError = (error) => {
 
 // Generic error formatter
 const formatGenericError = (error) => {
-  const message = error.message || ErrorMessages.INTERNAL_ERROR;
+  const message = error.message || ErrorMessages.SOMETHING_WENT_WRONG;
   return {
     data: null,
     message,
@@ -118,10 +118,10 @@ const formatGenericError = (error) => {
 const formatFallbackError = () => {
   return {
     data: null,
-    message: ErrorMessages.INTERNAL_ERROR,
+    message: ErrorMessages.SOMETHING_WENT_WRONG,
     status: Status.ERROR,
     statusCode: StatusCode.INTERNAL_ERROR,
-    error: 'Something went wrong',
+    error: ErrorMessages.SOMETHING_WENT_WRONG,
   };
 };
 
@@ -140,17 +140,17 @@ function formatMongoServerError(error) {
     console.log('[MONGO_SERVER_ERROR] - Duplicate key error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
-    message = 'Duplicate entry found';
+    message = ErrorMessages.DUPLICATE_ENTRY;
     const errorMessage = error.message || '';
 
     if (errorMessage.includes('email')) {
-      errorDetails = ['Email already exists'];
-      message = 'Email already exists';
+      errorDetails = [ErrorMessages.EMAIL_ALREADY_EXISTS];
+      message = ErrorMessages.EMAIL_ALREADY_EXISTS;
     } else if (errorMessage.includes('username')) {
-      errorDetails = ['Username already taken'];
-      message = 'Username already taken';
+      errorDetails = [ErrorMessages.USERNAME_ALREADY_TAKEN];
+      message = ErrorMessages.USERNAME_ALREADY_TAKEN;
     } else {
-      errorDetails = ['Record already exists'];
+      errorDetails = [ErrorMessages.DUPLICATE_ENTRY];
     }
 
     console.log(
@@ -161,20 +161,20 @@ function formatMongoServerError(error) {
     console.log('[MONGO_SERVER_ERROR] - Duplicate data error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
-    message = 'Duplicate data found';
-    errorDetails = ['This data already exists'];
+    message = ErrorMessages.DUPLICATE_ENTRY;
+    errorDetails = [ErrorMessages.DUPLICATE_ENTRY];
   } else if (error.code === 121 || error.statusCode === 121) {
     console.log('[MONGO_SERVER_ERROR] - Document validation error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
-    message = 'Invalid data format';
-    errorDetails = ['Please check your input data'];
+    message = ErrorMessages.INVALID_INPUT;
+    errorDetails = [ErrorMessages.INVALID_INPUT];
   } else {
     console.log('[MONGO_SERVER_ERROR] - Unknown MongoDB error, using default');
     statusCode = StatusCode.INTERNAL_ERROR;
     status = Status.ERROR;
-    message = 'Server error';
-    errorDetails = ['Please try again later'];
+    message = ErrorMessages.SOMETHING_WENT_WRONG;
+    errorDetails = [ErrorMessages.SOMETHING_WENT_WRONG];
   }
 
   const result = {
@@ -201,16 +201,16 @@ function formatMongoError(error) {
     let errorDetails = [];
 
     if (errorMessage.includes('email')) {
-      errorDetails = ['Email already exists'];
+      errorDetails = [ErrorMessages.EMAIL_ALREADY_EXISTS];
     } else if (errorMessage.includes('username')) {
-      errorDetails = ['Username already taken'];
+      errorDetails = [ErrorMessages.USERNAME_ALREADY_TAKEN];
     } else {
-      errorDetails = ['Data already exists'];
+      errorDetails = [ErrorMessages.DUPLICATE_ENTRY];
     }
 
     const result = {
       data: null,
-      message: 'Duplicate entry',
+      message: ErrorMessages.DUPLICATE_ENTRY,
       status: Status.FAILED,
       statusCode: StatusCode.BAD_REQUEST,
       error: errorDetails,
@@ -224,10 +224,10 @@ function formatMongoError(error) {
   console.log('[MONGO_ERROR] - Using default error response');
   return {
     data: null,
-    message: 'Server error',
+    message: ErrorMessages.SOMETHING_WENT_WRONG,
     status: Status.ERROR,
     statusCode: StatusCode.INTERNAL_ERROR,
-    error: 'Please try again later',
+    error: ErrorMessages.SOMETHING_WENT_WRONG,
   };
 }
 
@@ -238,7 +238,7 @@ function formatValidationError(error) {
 
   const result = {
     data: null,
-    message: 'Invalid input',
+    message: ErrorMessages.INVALID_INPUT,
     status: Status.FAILED,
     statusCode: StatusCode.BAD_REQUEST,
     error: error.message,
@@ -255,10 +255,10 @@ function formatCastError(error) {
 
   const result = {
     data: null,
-    message: 'Invalid data type',
+    message: ErrorMessages.INVALID_INPUT,
     status: Status.FAILED,
     statusCode: StatusCode.BAD_REQUEST,
-    error: 'Please check your data format',
+    error: ErrorMessages.INVALID_INPUT,
   };
 
   console.log('[CAST_ERROR] - Result:', result);
@@ -274,10 +274,10 @@ function formatJWTError(error) {
   if (error.name === 'JsonWebTokenError') {
     const result = {
       data: null,
-      message: 'Invalid token',
+      message: ErrorMessages.INVALID_TOKEN,
       status: Status.FAILED,
       statusCode: StatusCode.UNAUTHORIZED,
-      error: 'Please login again',
+      error: ErrorMessages.INVALID_TOKEN,
     };
     console.log('[JWT_ERROR] - Invalid token result:', result);
     return result;
@@ -417,4 +417,3 @@ const formatZodError = (err) => {
     error: errors,
   };
 };
- 

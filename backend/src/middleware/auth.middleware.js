@@ -1,4 +1,4 @@
-const { Status, StatusCode } = require('../constant');
+const { Status, StatusCode, ErrorMessages } = require('../constant');
 const createError = require('../helper/createError');
 const { handleJwtTokens, verifyToken } = require('../utils/jwtToken');
 const responseHandler = require('../utils/responseHandler');
@@ -21,7 +21,7 @@ const refreshTokenValidation = tryCatch(async (refreshToken, user, res) => {
       '[AUTH MIDDLEWARE] - refreshTokenValidation: Invalid refresh token - ID mismatch',
     );
     throw createError({
-      message: 'Invalid refresh token',
+      message: ErrorMessages.INVALID_REFRESH_TOKEN,
       status: Status.ERROR,
       statusCode: StatusCode.UNAUTHORIZED,
       errorDetails: null,
@@ -39,7 +39,7 @@ const refreshTokenValidation = tryCatch(async (refreshToken, user, res) => {
 
   return responseHandler(
     {
-      message: 'Tokens refreshed successfully',
+      message: ErrorMessages.TOKENS_REFRESHED,
       token,
       newRefreshToken,
     },
@@ -62,7 +62,7 @@ const tokenValidation = async (authToken, refreshToken, user, res) => {
         '[AUTH MIDDLEWARE] - tokenValidation: Unauthorized request - ID mismatch',
       );
       throw createError({
-        message: 'Unauthorized Request',
+        message: ErrorMessages.UNAUTHORIZED_REQUEST,
         status: Status.ERROR,
         statusCode: StatusCode.UNAUTHORIZED,
         errorDetails: null,
@@ -87,7 +87,7 @@ const tokenValidation = async (authToken, refreshToken, user, res) => {
       '[AUTH MIDDLEWARE] - tokenValidation: Token validation error, throwing error',
     );
     throw createError({
-      message: error.message,
+      message: error.message === 'Token has expired' ? ErrorMessages.TOKEN_EXPIRED : ErrorMessages.INVALID_TOKEN,
       status: Status.ERROR,
       statusCode: StatusCode.UNAUTHORIZED,
       errorDetails: null,
@@ -129,7 +129,7 @@ const authMiddleware = async (req, res, next) => {
       '[AUTH MIDDLEWARE] - authMiddleware: No user ID found in URL parameters',
     );
     throw createError({
-      message: 'User ID is required in URL parameters',
+      message: ErrorMessages.USER_ID_REQUIRED,
       status: Status.FAILED,
       statusCode: StatusCode.BAD_REQUEST,
       errorDetails: null,
@@ -148,7 +148,7 @@ const authMiddleware = async (req, res, next) => {
       userId,
     );
     throw createError({
-      message: 'User not found',
+      message: ErrorMessages.NO_USER_FOUND,
       status: Status.ERROR,
       statusCode: StatusCode.NOT_FOUND,
       errorDetails: null,
@@ -175,7 +175,7 @@ const authMiddleware = async (req, res, next) => {
   if (!authToken || !refreshToken) {
     console.log('[AUTH MIDDLEWARE] - authMiddleware: Missing required tokens');
     throw createError({
-      message: 'Unauthorized Request',
+      message: ErrorMessages.UNAUTHORIZED,
       status: Status.ERROR,
       statusCode: StatusCode.FORBIDDEN,
       errorDetails: null,

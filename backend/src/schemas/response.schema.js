@@ -1,5 +1,5 @@
 const { z } = require('zod');
-const { Status } = require("../constant");
+const { Status } = require('../constant');
 
 const ResponseSchema = z.object({
   data: z.any().optional(),
