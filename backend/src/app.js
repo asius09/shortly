@@ -3,11 +3,13 @@ const config = require('./config/config');
 const connectDB = require('./db');
 const cors = require('cors');
 const authRoutes = require('./routes/user.route');
+const urlRoutes = require('./routes/url.route');
 const errorHandler = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
 const { Status, StatusCode, ResponseMessages } = require('./constant');
 const createError = require('./helper/createError');
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
+const { handleRedirectUrl } = require('./controllers/url.contoller');
 
 const PORT = config.port;
 
@@ -20,8 +22,12 @@ app.use(cookieParser());
 // Connect DB
 connectDB();
 
-// Routes
+// Place the redirect route AFTER the API routes to avoid conflicts
 app.use('/', authRoutes);
+app.use('/url', urlRoutes);
+
+// URL redirect route (should be after API routes to avoid shadowing)
+app.get('/:alias', handleRedirectUrl);
 
 // Handle all non-matching routes with 404
 app.all('/*splat', (req, res, next) => {

@@ -14,6 +14,7 @@ const config = {
   saltRound: process.env.SALT_ROUND,
   ACCESS_TOKEN: 'accessToken',
   REFRESH_TOKEN: 'refreshToken',
+  DOMAIN: process.env.DOMAIN,
 };
 
 module.exports = config;
