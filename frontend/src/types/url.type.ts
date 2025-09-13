@@ -1,5 +1,5 @@
 export interface UrlType {
-  id: string;
+  _id: string;
   originalUrl: string;
   alias: string;
   shortUrl: string;

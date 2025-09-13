@@ -26,7 +26,7 @@ const navLinks = [
 export const Header = () => {
   const { user } = useUser();
   return (
-    <header className="fixed top-0 left-0 flex min-h-14 w-full max-w-screen min-w-sm items-center border-b-[0.25px] border-zinc-700 py-4 md:py-0 dark:border-zinc-600">
+    <header className="fixed top-0 left-0 flex min-h-14 w-full max-w-screen min-w-sm items-center border-b-[0.25px] border-zinc-700 px-6 py-4 md:py-0 dark:border-zinc-600">
       <nav className="mx-auto flex w-full max-w-4xl items-center justify-between">
         {/* Left: Logo */}
         <div className="flex flex-1 items-center">

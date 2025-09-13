@@ -7,9 +7,10 @@ import { cn } from "@/utils/cn";
 
 interface CopyButtonProps extends ButtonProps {
   text: string;
+  iconOnly?: boolean;
 }
 
-export function CopyButton({ text, className, ...props }: CopyButtonProps) {
+export function CopyButton({ text, className, iconOnly = false, ...props }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   return (
@@ -20,8 +21,8 @@ export function CopyButton({ text, className, ...props }: CopyButtonProps) {
       className={cn(className, "gap-1 text-xs")}
       {...props}
     >
-      <IconCopy size={12} />
-      {copied ? "Copied!" : "Copy"}
+      <IconCopy size={16} />
+      {!iconOnly && (copied ? "Copied!" : "Copy")}
     </Button>
   );
 }
