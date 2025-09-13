@@ -8,8 +8,19 @@ import { SignupFormSchema } from "@/schema/signupForm.schema";
 import { IconLoader } from "@tabler/icons-react";
 import { errorHandler, handleZodErros } from "@/utils/errorHandler";
 import { useToast } from "./ui/Toast";
+import { handleSignup } from "@/lib/user.api";
+import { useUser } from "@/context/user";
+import { useRouter } from "next/navigation";
 
 export const SignupForm = () => {
+  const { setUser, user } = useUser();
+
+  const router = useRouter();
+
+  if (user) {
+    router.push("/");
+    return null;
+  }
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -38,24 +49,50 @@ export const SignupForm = () => {
     console.log("Submitting form with values:", form);
     try {
       // Validate with zod
-      SignupFormSchema.parse(form);
-      console.log("Validation successful");
-      // TODO: handle actual signup logic here (API call, etc.)
-      // For now, just reset form
-      setTimeout(() => {
-        setForm({
-          fullName: "",
-          email: "",
-          password: "",
-        });
-        console.log("Form reset after signup simulation");
-      }, 1000);
+      console.log("Attempting to validate form:", form);
+      const parse = SignupFormSchema.parse(form);
+      console.log("Validation successful, parsed values:", parse);
+
+      console.log("Calling handleSignup with:", {
+        email: parse.email,
+        fullName: parse.fullName,
+        password: parse.password,
+      });
+      const response = await handleSignup({
+        email: parse.email,
+        fullName: parse.fullName,
+        password: parse.password,
+      });
+      console.log("Signup API response:", response);
+
+      const user = response.data.user;
+      console.log("User received from API:", user);
+
+      setUser({
+        id: String(user._id),
+        email: user.email,
+        fullName: user.fullName,
+      });
+      console.log("User set in context:", {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+      });
+
+      setForm({
+        fullName: "",
+        email: "",
+        password: "",
+      });
+      console.log("Form reset to initial state");
+
       addToast({
         id: Date.now(),
         message: "Sign Up Successfully! Logging you in.",
         type: "success",
       });
     } catch (err: unknown) {
+      console.log(err);
       const fieldErrors = handleZodErros(err);
       console.log(fieldErrors);
       if (Object.keys(fieldErrors).length > 0) {
