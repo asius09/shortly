@@ -1,8 +1,13 @@
 const tryCatch = (fn) => {
-  return async (req, res, next) => {
+  return async function (req, res, next) {
     try {
-      await fn(req, res, next);
+      const result = await fn(req, res, next);
+      // If the function returns a response, don't call next()
+      if (result && typeof result.then === 'undefined') {
+        return result;
+      }
     } catch (error) {
+      console.log(`[TRY CATCH] - ERROR: ${error}`);
       next(error);
     }
   };
