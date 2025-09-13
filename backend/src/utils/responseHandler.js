@@ -1,5 +1,5 @@
 const config = require('../config/config');
-const { Status, StatusCode } = require("../constant");
+const { Status, StatusCode } = require('../constant');
 
 const responseHandler = (
   {
@@ -39,13 +39,15 @@ const responseHandler = (
     });
   }
 
-  return res.status(statusCode).json({
+  const responsePayload = {
     statusCode,
     data,
     message,
     status,
     error,
-  });
+  };
+
+  return res.status(statusCode).json(responsePayload);
 };
 
 module.exports = responseHandler;
