@@ -229,4 +229,38 @@ const handleDelete = tryCatch(async (req, res) => {
   return responseHandler(responseData, res);
 });
 
-module.exports = { handleLogin, handleSignup, handleLogout, handleDelete };
+const handleUser = tryCatch(async (req, res, next) => {
+  // Simply return the user info from req.user (populated by authMiddleware)
+  if (!req.user) {
+    throw createError({
+      message: ResponseMessages.NO_USER_FOUND,
+      status: Status.ERROR,
+      statusCode: StatusCode.NOT_FOUND,
+      errorDetails: null,
+    });
+  }
+
+  return responseHandler(
+    {
+      status: Status.SUCCESS,
+      statusCode: StatusCode.OK,
+      message: 'User info retrieved successfully',
+      data: {
+        user: {
+          id: req.user._id,
+          fullName: req.user.fullName,
+          email: req.user.email,
+        },
+      },
+    },
+    res,
+  );
+});
+
+module.exports = {
+  handleLogin,
+  handleSignup,
+  handleLogout,
+  handleDelete,
+  handleUser,
+};

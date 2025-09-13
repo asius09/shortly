@@ -47,7 +47,7 @@ const refreshTokenValidation = tryCatch(async (refreshToken, user, res) => {
   );
 });
 
-const tokenValidation = async (authToken, refreshToken, user, res) => {
+const tokenValidation = async (authToken, refreshToken, user, res, req) => {
   console.log('[AUTH MIDDLEWARE] - tokenValidation: Starting token validation');
   console.log('[AUTH MIDDLEWARE] - tokenValidation: User ID:', user._id);
 
@@ -68,8 +68,10 @@ const tokenValidation = async (authToken, refreshToken, user, res) => {
         errorDetails: null,
       });
     }
+    // Set req.user if verifyToken is successful
+    req.user = user;
     console.log(
-      '[AUTH MIDDLEWARE] - tokenValidation: Token validation successful',
+      '[AUTH MIDDLEWARE] - tokenValidation: Token validation successful, req.user set',
     );
   } catch (error) {
     console.log(
@@ -188,7 +190,7 @@ const authMiddleware = async (req, res, next) => {
   console.log(
     '[AUTH MIDDLEWARE] - authMiddleware: Proceeding with token validation',
   );
-  await tokenValidation(authToken, refreshToken, user, res);
+  await tokenValidation(authToken, refreshToken, user, res, req);
 
   console.log(
     '[AUTH MIDDLEWARE] - authMiddleware: Authentication successful, proceeding to next middleware',
