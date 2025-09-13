@@ -1,51 +1,70 @@
-# URL Shortener Project
+# URL Shortener Project (Backend Complete)
 
-This project is a comprehensive URL shortener application with a robust backend API built using Node.js, Express.js, MongoDB, and Mongoose. The backend features secure authentication, JWT token management, and comprehensive error handling.
+> _Note: The backend for this URL shortener project is now fully implemented! This README describes the finished backend functionality, API, and setup instructions._
+
+## Overview
+
+This project is a full-featured URL shortener application. The backend is built with Node.js, Express.js, MongoDB, and Mongoose. It provides secure authentication, JWT token management, robust error handling, and a complete set of endpoints for user and URL management.
 
 ## Features
 
-- **User Authentication**: Secure signup and login with JWT tokens
-- **Token Management**: Access and refresh token system with automatic token refresh
-- **Password Security**: Bcrypt hashing with strong password validation
-- **Input Validation**: Zod schema validation for all user inputs
-- **Error Handling**: Centralized error handling with structured error responses
-- **Cookie Management**: Secure HTTP-only cookies for token storage
-- **Logging**: Comprehensive request and error logging
-- **CORS Support**: Cross-origin resource sharing configuration
+- User authentication (signup & login) with JWT tokens
+- Access and refresh token system
+- Password hashing with bcrypt
+- Input validation using Zod schemas
+- Centralized error handling
+- Secure HTTP-only cookies for tokens
+- Request and error logging
+- CORS configuration
+- Full CRUD for short URLs (create, fetch, update, delete)
+- URL redirection endpoint
 
 ## Tech Stack
 
 - **Backend**: Node.js, Express.js
-- **Database**: MongoDB with Mongoose ODM
+- **Database**: MongoDB (Mongoose ODM)
 - **Authentication**: JWT (JSON Web Tokens)
-- **Validation**: Zod schema validation
-- **Security**: Bcrypt for password hashing, Helmet for security headers
-- **Development**: Nodemon for development server
+- **Validation**: Zod
+- **Security**: Bcrypt, Helmet
+- **Development**: Nodemon
 
 ## API Endpoints
 
-- `POST /signup` - User registration
-- `POST /login` - User authentication
-- `POST /logout/:userId` - User logout (requires authentication)
-- `DELETE /delete/:userId` - User account deletion (requires authentication)
+### User Endpoints
+
+- `POST /signup` — User registration
+- `POST /login` — User authentication
+- `POST /logout/:userId` — User logout (requires authentication)
+- `DELETE /delete/:userId` — User account deletion (requires authentication)
+
+### URL Endpoints
+
+- `POST /url/create` — Create a new short URL (requires authentication)
+- `GET /url` — Get all URLs for the authenticated user
+- `GET /url?id=<urlId>` — Get a specific URL by ID (requires authentication)
+- `PUT /url/update` — Update a short URL (requires authentication)
+- `DELETE /url?id=<urlId>` — Delete a short URL (requires authentication)
+- `GET /:alias` — Redirect to the original URL using the short alias
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- MongoDB database
-- npm or yarn package manager
+- Node.js (v14+)
+- MongoDB
+- npm or yarn
 
 ### Installation
 
 1. Clone the repository
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
-3. Set up environment variables (create a `.env` file):
+3. Create a `.env` file with the following variables:
+
    ```
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret_key
@@ -53,18 +72,19 @@ This project is a comprehensive URL shortener application with a robust backend 
    PORT=3000
    ```
 
-4. Run the development server:
+4. Start the development server:
+
    ```bash
    npm run dev
    ```
 
-5. The server will start on the configured port (default: 3000)
+5. The server will run on the configured port (default: 3000)
 
 ### Available Scripts
 
-- `npm start` - Start production server
-- `npm run dev` - Start development server with nodemon
-- `npm run lint` - Run ESLint for code quality
-- `npm test` - Run the application
+- `npm start` — Start production server
+- `npm run dev` — Start development server with nodemon
+- `npm run lint` — Run ESLint
+- `npm test` — Run tests
 
 ## Project Structure
