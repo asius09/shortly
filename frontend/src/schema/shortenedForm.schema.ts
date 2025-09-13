@@ -12,5 +12,5 @@ export const ShortenedFormSchema = z.object({
       message:
         "Alias can only contain letters, numbers, underscores, hyphens, dots, and tildes",
     }),
-  createdAt: z.iso.datetime({ message: "Creation date is required" }),
+  createdAt: z.iso.datetime({ message: "Creation date is required" }).optional(),
 });

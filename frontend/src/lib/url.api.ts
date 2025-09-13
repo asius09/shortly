@@ -1,82 +1,70 @@
 import axios from "axios";
 import { UrlType } from "@/types/url.type";
 
-// Helper to get API base URL (adjust as needed)
+// Use the same API base as in next.config.js rewrites
 const API_BASE = "/api/urls";
 
-// Get all URLs (optionally by userId)
-export async function getUrls(userId?: string): Promise<UrlType[]> {
+// All requests to /api/* will be proxied to the backend by Next.js rewrites
+
+export async function getUrls(userId?: string) {
   try {
-    let url = API_BASE;
-    if (userId) {
-      url += `/user=${userId}`;
-    }
-    const res = await axios.get<UrlType[]>(url);
+    const url = userId ? `${API_BASE}?user=${encodeURIComponent(userId)}` : API_BASE;
+    const res = await axios.get(url, { withCredentials: true });
     return res.data;
   } catch (err: any) {
     throw new Error(err.response?.data?.message || "Failed to fetch URLs");
   }
 }
 
-// Get a URL by id (optionally by userId)
-export async function getUrlById(
-  id: string,
-  userId?: string,
-): Promise<UrlType> {
+export async function getUrlById(id: string, userId?: string) {
   try {
-    let url = `${API_BASE}/id=${id}`;
-    if (userId) {
-      url += `&user=${userId}`;
-    }
-    const res = await axios.get<UrlType>(url);
+    const url = userId
+      ? `${API_BASE}/${encodeURIComponent(id)}?user=${encodeURIComponent(userId)}`
+      : `${API_BASE}/${encodeURIComponent(id)}`;
+    const res = await axios.get(url, { withCredentials: true });
     return res.data;
   } catch (err: any) {
     throw new Error(err.response?.data?.message || "Failed to fetch URL");
   }
 }
 
-// Create a new shortened URL
 export async function createUrl(data: {
   originalUrl: string;
   alias?: string;
   userId: string;
-}): Promise<UrlType> {
+  createdAt?: string;
+}) {
   try {
-    // userId is required for the endpoint
     const { userId, ...rest } = data;
-    const res = await axios.post<UrlType>(`${API_BASE}/user=${userId}`, rest);
+    const url = `${API_BASE}?user=${encodeURIComponent(userId)}`;
+    const res = await axios.post(url, rest, { withCredentials: true });
     return res.data;
   } catch (err: any) {
     throw new Error(err.response?.data?.message || "Failed to create URL");
   }
 }
 
-// Update an existing shortened URL
 export async function updateUrl(
   id: string,
   userId: string,
   data: Partial<Pick<UrlType, "originalUrl" | "alias">>,
-): Promise<UrlType> {
+) {
   try {
-    const res = await axios.put<UrlType>(
-      `${API_BASE}/user=${userId}&id=${id}`,
-      data,
-    );
+    const url = `${API_BASE}/${encodeURIComponent(id)}?user=${encodeURIComponent(userId)}`;
+    const res = await axios.put(url, data, { withCredentials: true });
     return res.data;
   } catch (err: any) {
     throw new Error(err.response?.data?.message || "Failed to update URL");
   }
 }
 
-// Delete a shortened URL
 export async function deleteUrl(
   id: string,
   userId: string,
-): Promise<{ success: boolean; message?: string }> {
+) {
   try {
-    const res = await axios.delete<{ success: boolean; message?: string }>(
-      `${API_BASE}/user=${userId}&id=${id}`,
-    );
+    const url = `${API_BASE}/${encodeURIComponent(id)}?user=${encodeURIComponent(userId)}`;
+    const res = await axios.delete(url, { withCredentials: true });
     return res.data;
   } catch (err: any) {
     throw new Error(err.response?.data?.message || "Failed to delete URL");

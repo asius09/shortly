@@ -15,7 +15,6 @@ import { useDialog } from "./ui/Dialog";
 
 export const ShortendedForm = () => {
   const { open } = useDialog();
-
   const { user } = useUser();
   const router = useRouter();
 
@@ -23,6 +22,7 @@ export const ShortendedForm = () => {
     router.push("/login");
     return null;
   }
+
   const [form, setForm] = useState({
     originalUrl: "",
     alias: "",
@@ -32,8 +32,7 @@ export const ShortendedForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.name;
-    const value = e.target.value;
+    const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
       [name]: value,
@@ -65,19 +64,21 @@ export const ShortendedForm = () => {
     try {
       const parse = ShortenedFormSchema.parse({
         ...form,
-        createAt: Date.now(),
+        createdAt: new Date().toISOString(),
       });
 
-      const url = await createUrl({
+      const response = await createUrl({
         originalUrl: parse.originalUrl,
         alias: parse.alias,
         userId: user.id,
+        createdAt: parse.createdAt,
       });
 
+      const data = response.data.createdUrl;
       open({
-        title: "Shortened URL Copied!",
-        description: "Your shortened URL is ready to use.",
-        content: <CopyUrlDialog shortenedUrl={url.shortUrl} />,
+        title: "Your Shortened Link is Ready!",
+        description: "Here is your new shortened URL. Copy and share it!",
+        content: <CopyUrlDialog shortenedUrl={data.shortUrl} />,
       });
 
       setForm({
@@ -103,6 +104,8 @@ export const ShortendedForm = () => {
           type: "error",
         });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
