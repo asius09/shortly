@@ -7,27 +7,67 @@ const userRegistrationSchema = z.object({
     .min(3, 'Full Name must be at least 3 characters')
     .max(20, 'Full Name must not exceed 20 characters')
     .trim(),
-  email: z.email('Invalid email format').trim(),
+  email: z
+    .email({
+      message: (iss) => {
+        if (iss.input === undefined || iss.input === null || iss.input === '') {
+          return 'Email is required.';
+        }
+        // If it's not a valid email, zod will call this with the invalid input
+        return 'Invalid email format.';
+      },
+    })
+    .trim(),
   password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(20, 'Password must not exceed 20 characters')
+    .string({
+      error: (iss) => {
+        if (iss.input === undefined || iss.input === null || iss.input === '') {
+          return 'Password is required.';
+        }
+        if (iss.code === 'invalid_type') {
+          return 'Password must be a string.';
+        }
+        return 'Invalid password input.';
+      },
+    })
+    .min(8, { message: 'Password must be at least 8 characters' })
+    .max(20, { message: 'Password must not exceed 20 characters' })
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/,
       'Password must contain lowercase, uppercase, number, and special character',
     )
     .trim(),
 });
 
-// User login schema
+// User login schema with custom error example
 const userLoginSchema = z.object({
-  email: z.string().email('Invalid email format').trim(),
+  email: z
+    .email({
+      message: (iss) => {
+        if (iss.input === undefined || iss.input === null || iss.input === '') {
+          return 'Email is required.';
+        }
+        // If it's not a valid email, zod will call this with the invalid input
+        return 'Invalid email format.';
+      },
+    })
+    .trim(),
   password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(20, 'Password must not exceed 20 characters')
+    .string({
+      error: (iss) => {
+        if (iss.input === undefined || iss.input === null || iss.input === '') {
+          return 'Password is required.';
+        }
+        if (iss.code === 'invalid_type') {
+          return 'Password must be a string.';
+        }
+        return 'Invalid password input.';
+      },
+    })
+    .min(8, { message: 'Password must be at least 8 characters' })
+    .max(20, { message: 'Password must not exceed 20 characters' })
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/,
       'Password must contain lowercase, uppercase, number, and special character',
     )
     .trim(),
@@ -36,15 +76,40 @@ const userLoginSchema = z.object({
 // User update schema (optional fields)
 const userUpdateSchema = z.object({
   fullName: z
-    .string()
+    .string('Full Name is required')
     .min(3, 'Full Name must be at least 3 characters')
     .max(20, 'Full Name must not exceed 20 characters')
     .trim()
     .optional(),
-  email: z.string().email('Invalid email format').trim().optional(),
+  email: z
+    .email({
+      message: (iss) => {
+        if (iss.input === undefined || iss.input === null || iss.input === '') {
+          return 'Email is required.';
+        }
+        // If it's not a valid email, zod will call this with the invalid input
+        return 'Invalid email format.';
+      },
+    })
+    .trim(),
   password: z
-    .string()
-    .min(6, 'Password must be at least 6 characters')
+    .string({
+      error: (iss) => {
+        if (iss.input === undefined || iss.input === null || iss.input === '') {
+          return 'Password is required.';
+        }
+        if (iss.code === 'invalid_type') {
+          return 'Password must be a string.';
+        }
+        return 'Invalid password input.';
+      },
+    })
+    .min(8, { message: 'Password must be at least 8 characters' })
+    .max(20, { message: 'Password must not exceed 20 characters' })
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/,
+      'Password must contain lowercase, uppercase, number, and special character',
+    )
     .trim()
     .optional(),
 });
@@ -57,7 +122,7 @@ const refreshTokenSchema = z.object({
 // Password change schema
 const changePasswordSchema = z.object({
   currentPassword: z
-    .string()
+    .string('Current Password is required')
     .min(8, 'Current password must be at least 8 characters')
     .max(20, 'Current password must not exceed 20 characters')
     .regex(
@@ -66,7 +131,7 @@ const changePasswordSchema = z.object({
     )
     .trim(),
   newPassword: z
-    .string()
+    .string('New Password is required')
     .min(8, 'New password must be at least 8 characters')
     .max(20, 'New password must not exceed 20 characters')
     .regex(

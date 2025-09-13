@@ -87,7 +87,10 @@ const tokenValidation = async (authToken, refreshToken, user, res) => {
       '[AUTH MIDDLEWARE] - tokenValidation: Token validation error, throwing error',
     );
     throw createError({
-      message: error.message === 'Token has expired' ? ResponseMessages.TOKEN_EXPIRED : ResponseMessages.INVALID_TOKEN,
+      message:
+        error.message === 'Token has expired'
+          ? ResponseMessages.TOKEN_EXPIRED
+          : ResponseMessages.INVALID_TOKEN,
       status: Status.ERROR,
       statusCode: StatusCode.UNAUTHORIZED,
       errorDetails: null,
@@ -119,7 +122,7 @@ const authMiddleware = async (req, res, next) => {
       '[AUTH MIDDLEWARE] - authMiddleware: Other route detected, extracting user ID from body or query',
     );
     // For other routes, get from body or query
-    userId = req.body.userId || req.query.userId;
+    userId = req.query.user;
   }
 
   console.log('[AUTH MIDDLEWARE] - authMiddleware: User ID extracted:', userId);
