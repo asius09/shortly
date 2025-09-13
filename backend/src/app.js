@@ -24,7 +24,7 @@ connectDB();
 
 // Place the redirect route AFTER the API routes to avoid conflicts
 app.use('/api', authRoutes);
-app.use('/api/url', urlRoutes);
+app.use('/api/urls', urlRoutes);
 
 // URL redirect route (should be after API routes to avoid shadowing)
 app.get('/:alias', handleRedirectUrl);
