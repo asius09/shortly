@@ -1,8 +1,8 @@
-const { StatusCode, Status, ErrorMessages } = require('../constant');
+const { StatusCode, Status, ResponseMessages } = require('../constant');
 
 const createError = (props = {}) => {
   const {
-    message = ErrorMessages.SOMETHING_WENT_WRONG,
+    message = ResponseMessages.SOMETHING_WENT_WRONG,
     status = Status.FAILED,
     statusCode = StatusCode.BAD_REQUEST,
     errorDetails = null,

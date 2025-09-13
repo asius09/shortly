@@ -17,7 +17,7 @@ const StatusCode = {
 };
 
 // Common error messages
-const ErrorMessages = {
+const ResponseMessages = {
   VALIDATION_ERROR: 'Validation failed',
   UNAUTHORIZED: 'Authentication required',
   FORBIDDEN: 'Access denied',
@@ -52,10 +52,19 @@ const ErrorMessages = {
   INVALID_INPUT: 'Invalid input',
   SERVER_ERROR: 'Server error',
   SOMETHING_WENT_WRONG: 'Something went wrong',
+  SHORTURL_ID_REQUIRED: 'Short URL ID is required',
+  SHORTURL_NOT_FOUND: 'Short URL not found',
+  SHORTURL_ALIAS_TAKEN: 'Short URL alias is already taken',
+  INVALID_SHORTURL_ALIAS: 'Invalid short URL alias',
+  INVALID_SHORTURL_ID: 'Invalid short URL ID',
+  SHORTURL_CREATE_SUCCESS: 'Short URL created successfully',
+  SHORTURL_UPDATE_SUCCESS: 'Short URL updated successfully',
+  SHORTURL_DELETE_SUCCESS: 'Short URL deleted successfully',
+  SHORTURL_FETCH_SUCCESS: 'Short URL fetched successfully',
 };
 
 module.exports = {
   Status,
   StatusCode,
-  ErrorMessages,
+  ResponseMessages,
 };

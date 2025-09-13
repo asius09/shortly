@@ -1,4 +1,4 @@
-const { ErrorMessages, Status, StatusCode } = require('../constant');
+const { ResponseMessages, Status, StatusCode } = require('../constant');
 const { z } = require('zod');
 
 // Main function that orchestrates all error formatting
@@ -104,7 +104,7 @@ const isPrimitiveError = (error) => {
 
 // Generic error formatter
 const formatGenericError = (error) => {
-  const message = error.message || ErrorMessages.SOMETHING_WENT_WRONG;
+  const message = error.message || ResponseMessages.SOMETHING_WENT_WRONG;
   return {
     data: null,
     message,
@@ -118,10 +118,10 @@ const formatGenericError = (error) => {
 const formatFallbackError = () => {
   return {
     data: null,
-    message: ErrorMessages.SOMETHING_WENT_WRONG,
+    message: ResponseMessages.SOMETHING_WENT_WRONG,
     status: Status.ERROR,
     statusCode: StatusCode.INTERNAL_ERROR,
-    error: ErrorMessages.SOMETHING_WENT_WRONG,
+    error: ResponseMessages.SOMETHING_WENT_WRONG,
   };
 };
 
@@ -140,17 +140,17 @@ function formatMongoServerError(error) {
     console.log('[MONGO_SERVER_ERROR] - Duplicate key error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
-    message = ErrorMessages.DUPLICATE_ENTRY;
+    message = ResponseMessages.DUPLICATE_ENTRY;
     const errorMessage = error.message || '';
 
     if (errorMessage.includes('email')) {
-      errorDetails = [ErrorMessages.EMAIL_ALREADY_EXISTS];
-      message = ErrorMessages.EMAIL_ALREADY_EXISTS;
+      errorDetails = [ResponseMessages.EMAIL_ALREADY_EXISTS];
+      message = ResponseMessages.EMAIL_ALREADY_EXISTS;
     } else if (errorMessage.includes('username')) {
-      errorDetails = [ErrorMessages.USERNAME_ALREADY_TAKEN];
-      message = ErrorMessages.USERNAME_ALREADY_TAKEN;
+      errorDetails = [ResponseMessages.USERNAME_ALREADY_TAKEN];
+      message = ResponseMessages.USERNAME_ALREADY_TAKEN;
     } else {
-      errorDetails = [ErrorMessages.DUPLICATE_ENTRY];
+      errorDetails = [ResponseMessages.DUPLICATE_ENTRY];
     }
 
     console.log(
@@ -161,20 +161,20 @@ function formatMongoServerError(error) {
     console.log('[MONGO_SERVER_ERROR] - Duplicate data error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
-    message = ErrorMessages.DUPLICATE_ENTRY;
-    errorDetails = [ErrorMessages.DUPLICATE_ENTRY];
+    message = ResponseMessages.DUPLICATE_ENTRY;
+    errorDetails = [ResponseMessages.DUPLICATE_ENTRY];
   } else if (error.code === 121 || error.statusCode === 121) {
     console.log('[MONGO_SERVER_ERROR] - Document validation error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
-    message = ErrorMessages.INVALID_INPUT;
-    errorDetails = [ErrorMessages.INVALID_INPUT];
+    message = ResponseMessages.INVALID_INPUT;
+    errorDetails = [ResponseMessages.INVALID_INPUT];
   } else {
     console.log('[MONGO_SERVER_ERROR] - Unknown MongoDB error, using default');
     statusCode = StatusCode.INTERNAL_ERROR;
     status = Status.ERROR;
-    message = ErrorMessages.SOMETHING_WENT_WRONG;
-    errorDetails = [ErrorMessages.SOMETHING_WENT_WRONG];
+    message = ResponseMessages.SOMETHING_WENT_WRONG;
+    errorDetails = [ResponseMessages.SOMETHING_WENT_WRONG];
   }
 
   const result = {
@@ -201,16 +201,16 @@ function formatMongoError(error) {
     let errorDetails = [];
 
     if (errorMessage.includes('email')) {
-      errorDetails = [ErrorMessages.EMAIL_ALREADY_EXISTS];
+      errorDetails = [ResponseMessages.EMAIL_ALREADY_EXISTS];
     } else if (errorMessage.includes('username')) {
-      errorDetails = [ErrorMessages.USERNAME_ALREADY_TAKEN];
+      errorDetails = [ResponseMessages.USERNAME_ALREADY_TAKEN];
     } else {
-      errorDetails = [ErrorMessages.DUPLICATE_ENTRY];
+      errorDetails = [ResponseMessages.DUPLICATE_ENTRY];
     }
 
     const result = {
       data: null,
-      message: ErrorMessages.DUPLICATE_ENTRY,
+      message: ResponseMessages.DUPLICATE_ENTRY,
       status: Status.FAILED,
       statusCode: StatusCode.BAD_REQUEST,
       error: errorDetails,
@@ -224,10 +224,10 @@ function formatMongoError(error) {
   console.log('[MONGO_ERROR] - Using default error response');
   return {
     data: null,
-    message: ErrorMessages.SOMETHING_WENT_WRONG,
+    message: ResponseMessages.SOMETHING_WENT_WRONG,
     status: Status.ERROR,
     statusCode: StatusCode.INTERNAL_ERROR,
-    error: ErrorMessages.SOMETHING_WENT_WRONG,
+    error: ResponseMessages.SOMETHING_WENT_WRONG,
   };
 }
 
@@ -238,7 +238,7 @@ function formatValidationError(error) {
 
   const result = {
     data: null,
-    message: ErrorMessages.INVALID_INPUT,
+    message: ResponseMessages.INVALID_INPUT,
     status: Status.FAILED,
     statusCode: StatusCode.BAD_REQUEST,
     error: error.message,
@@ -255,10 +255,10 @@ function formatCastError(error) {
 
   const result = {
     data: null,
-    message: ErrorMessages.INVALID_INPUT,
+    message: ResponseMessages.INVALID_INPUT,
     status: Status.FAILED,
     statusCode: StatusCode.BAD_REQUEST,
-    error: ErrorMessages.INVALID_INPUT,
+    error: ResponseMessages.INVALID_INPUT,
   };
 
   console.log('[CAST_ERROR] - Result:', result);
@@ -274,10 +274,10 @@ function formatJWTError(error) {
   if (error.name === 'JsonWebTokenError') {
     const result = {
       data: null,
-      message: ErrorMessages.INVALID_TOKEN,
+      message: ResponseMessages.INVALID_TOKEN,
       status: Status.FAILED,
       statusCode: StatusCode.UNAUTHORIZED,
-      error: ErrorMessages.INVALID_TOKEN,
+      error: ResponseMessages.INVALID_TOKEN,
     };
     console.log('[JWT_ERROR] - Invalid token result:', result);
     return result;
@@ -309,7 +309,7 @@ function formatCustomError(error) {
   console.log('[CUSTOM_ERROR] - Processing error:', error);
   console.log('[CUSTOM_ERROR] - Error keys:', Object.keys(error));
 
-  let message = error.message || ErrorMessages.INTERNAL_ERROR;
+  let message = error.message || ResponseMessages.INTERNAL_ERROR;
   let status = Status.ERROR;
   let statusCode = StatusCode.INTERNAL_ERROR;
   let errorDetails = [message];
@@ -340,8 +340,8 @@ function formatCustomError(error) {
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
     message = 'Invalid input';
-    const errorMessages = Object.values(error.errors).map((err) => err.message);
-    errorDetails = errorMessages;
+    const ResponseMessages = Object.values(error.errors).map((err) => err.message);
+    errorDetails = ResponseMessages;
   }
 
   return {
@@ -358,10 +358,10 @@ function formatPrimitiveError(error) {
   if (!error) {
     return {
       data: null,
-      message: ErrorMessages.INTERNAL_ERROR,
+      message: ResponseMessages.INTERNAL_ERROR,
       status: Status.ERROR,
       statusCode: StatusCode.INTERNAL_ERROR,
-      error: ErrorMessages.INTERNAL_ERROR,
+      error: ResponseMessages.INTERNAL_ERROR,
     };
   } else if (typeof error === 'string') {
     return {
@@ -383,10 +383,10 @@ function formatPrimitiveError(error) {
     } else {
       return {
         data: null,
-        message: ErrorMessages.INTERNAL_ERROR,
+        message: ResponseMessages.INTERNAL_ERROR,
         status: Status.ERROR,
         statusCode: StatusCode.INTERNAL_ERROR,
-        error: ErrorMessages.INTERNAL_ERROR,
+        error: ResponseMessages.INTERNAL_ERROR,
       };
     }
   }
@@ -394,7 +394,7 @@ function formatPrimitiveError(error) {
   // Return default error response instead of null
   return {
     data: null,
-    message: ErrorMessages.INTERNAL_ERROR,
+    message: ResponseMessages.INTERNAL_ERROR,
     status: Status.ERROR,
     statusCode: StatusCode.INTERNAL_ERROR,
     error: 'Something went wrong',

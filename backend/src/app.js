@@ -5,7 +5,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/user.route');
 const errorHandler = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
-const { Status, StatusCode, ErrorMessages } = require('./constant');
+const { Status, StatusCode, ResponseMessages } = require('./constant');
 const createError = require('./helper/createError');
 var cookieParser = require('cookie-parser');
 
@@ -26,7 +26,7 @@ app.use('/', authRoutes);
 // Handle all non-matching routes with 404
 app.all('/*splat', (req, res, next) => {
   const error = createError({
-    message: ErrorMessages.NOT_FOUND,
+    message: ResponseMessages.NOT_FOUND,
     status: Status.FAILED,
     statusCode: StatusCode.NOT_FOUND,
   });
