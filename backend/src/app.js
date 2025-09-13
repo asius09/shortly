@@ -23,8 +23,8 @@ app.use(cookieParser());
 connectDB();
 
 // Place the redirect route AFTER the API routes to avoid conflicts
-app.use('/', authRoutes);
-app.use('/url', urlRoutes);
+app.use('/api', authRoutes);
+app.use('/api/url', urlRoutes);
 
 // URL redirect route (should be after API routes to avoid shadowing)
 app.get('/:alias', handleRedirectUrl);
