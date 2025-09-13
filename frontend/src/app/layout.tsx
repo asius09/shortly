@@ -7,7 +7,6 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { UserProvider } from "@/context/user";
 import { cookies } from "next/headers";
-import axios from "axios";
 
 // Font setup
 const geistSans = Inter({
@@ -29,7 +28,7 @@ export const metadata: Metadata = {
     "Shortly is a simple URL shortener website built with Next.js, MongoDB, and Mongoose. Practice and enhance your backend development skills with this practical application.",
 };
 
-// Server-side function to fetch user info from API route using axios
+// Server-side function to fetch user info from API route using fetch
 async function fetchUserServer(): Promise<{
   id: string;
   email: string;
@@ -37,22 +36,34 @@ async function fetchUserServer(): Promise<{
 } | null> {
   try {
     // Use next/headers to get cookies for SSR
-    const cookieHeader = cookies().toString();
+    const cookieHeader = (await cookies()).toString();
 
-    // Call the API route directly (relative path, since we're on the same host)
-    const res = await axios.post(
-      "/api/user/me",
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-        },
-        // withCredentials is not needed for server-to-server, but harmless
-        withCredentials: true,
+    // Use API_BASE_URL from env (default to http://localhost:8000 if not set)
+    const API_BASE_URL =
+      process.env.API_BASE_URL ||
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      "http://localhost:8000/";
+
+    // Ensure no trailing slash
+    const baseUrl = API_BASE_URL.replace(/\/+$/, "");
+    const url = `${baseUrl}/api/user/me`;
+
+    // Call the API route using absolute URL (for SSR)
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
       },
-    );
-    const data = res.data;
+      next: { revalidate: 0 }, // Uncomment if you want to disable cache
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    const data = await res.json();
+
     if (data?.data?.user) {
       return {
         id: String(data.data.user.id || data.data.user._id),
@@ -61,7 +72,7 @@ async function fetchUserServer(): Promise<{
       };
     }
     return null;
-  } catch {
+  } catch (err) {
     return null;
   }
 }
@@ -72,9 +83,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Fetch user on the server before rendering
-  // This is similar to how you would use @user.api.ts for login/session
-  // NOTE: UserProvider must be updated to accept initialUser prop for this to work.
-  // If not, you must update UserProvider in context/user.tsx to accept and use initialUser.
   const user = await fetchUserServer();
 
   return (

@@ -72,7 +72,7 @@ const featuresData = [
 
 export default function AboutPage() {
   return (
-    <div className="flex h-full w-full items-center justify-center">
+    <div className="flex h-full w-full items-center justify-center px-6">
       <Card>
         <div className="flex flex-col items-center justify-center gap-4">
           <div className="flex items-center justify-center gap-2">
