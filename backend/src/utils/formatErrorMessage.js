@@ -10,6 +10,26 @@ const formatErrorMessage = (error) => {
     error?.constructor?.name,
   );
 
+  // Special handling for errors created by createError.js
+  if (
+    error instanceof Error &&
+    Object.prototype.hasOwnProperty.call(error, 'statusCode') &&
+    Object.prototype.hasOwnProperty.call(error, 'status')
+  ) {
+    // This is likely a custom error from createError.js
+    return {
+      data: null,
+      message: error.message || ResponseMessages.SOMETHING_WENT_WRONG,
+      status: error.status || Status.FAILED,
+      statusCode: error.statusCode || StatusCode.BAD_REQUEST,
+      error: error.errorDetails
+        ? Array.isArray(error.errorDetails)
+          ? error.errorDetails
+          : [error.errorDetails]
+        : [error.message || ResponseMessages.SOMETHING_WENT_WRONG],
+    };
+  }
+
   // Check error type and parse accordingly
   const errorType = getErrorType(error);
   console.log('[FORMAT_ERROR] - Detected error type:', errorType);
@@ -125,7 +145,7 @@ const formatFallbackError = () => {
   };
 };
 
-// Handle MongoDB server errors
+// Handle MongoDB server errors with specific duplicate key info
 function formatMongoServerError(error) {
   console.log('[MONGO_SERVER_ERROR] - Processing error:', error);
   console.log('[MONGO_SERVER_ERROR] - Error code:', error.code);
@@ -140,23 +160,35 @@ function formatMongoServerError(error) {
     console.log('[MONGO_SERVER_ERROR] - Duplicate key error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
-    message = ResponseMessages.DUPLICATE_ENTRY;
-    const errorMessage = error.message || '';
 
-    if (errorMessage.includes('email')) {
-      errorDetails = [ResponseMessages.EMAIL_ALREADY_EXISTS];
+    // Try to extract the duplicated field(s) and value(s)
+    let duplicateFields = [];
+    let duplicateValues = [];
+    if (error.keyPattern) {
+      duplicateFields = Object.keys(error.keyPattern);
+    }
+    if (error.keyValue) {
+      duplicateValues = Object.entries(error.keyValue).map(
+        ([field, value]) => `${field}: "${value}"`
+      );
+    }
+
+    // Compose a specific message
+    if (duplicateFields.length > 0 && duplicateValues.length > 0) {
+      message = `Duplicate entry for ${duplicateValues.join(', ')}. Please use a different value.`;
+      errorDetails = [`Duplicate value for field(s): ${duplicateFields.join(', ')}`];
+    } else if (error.message && error.message.includes('email')) {
       message = ResponseMessages.EMAIL_ALREADY_EXISTS;
-    } else if (errorMessage.includes('username')) {
-      errorDetails = [ResponseMessages.USERNAME_ALREADY_TAKEN];
+      errorDetails = [ResponseMessages.EMAIL_ALREADY_EXISTS];
+    } else if (error.message && error.message.includes('username')) {
       message = ResponseMessages.USERNAME_ALREADY_TAKEN;
+      errorDetails = [ResponseMessages.USERNAME_ALREADY_TAKEN];
     } else {
+      message = ResponseMessages.DUPLICATE_ENTRY;
       errorDetails = [ResponseMessages.DUPLICATE_ENTRY];
     }
 
-    console.log(
-      '[MONGO_SERVER_ERROR] - Duplicate error details:',
-      errorDetails,
-    );
+    console.log('[MONGO_SERVER_ERROR] - Duplicate error details:', errorDetails);
   } else if (error.code === 11001 || error.statusCode === 11001) {
     console.log('[MONGO_SERVER_ERROR] - Duplicate data error detected');
     statusCode = StatusCode.BAD_REQUEST;
@@ -340,7 +372,9 @@ function formatCustomError(error) {
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
     message = 'Invalid input';
-    const ResponseMessages = Object.values(error.errors).map((err) => err.message);
+    const ResponseMessages = Object.values(error.errors).map(
+      (err) => err.message,
+    );
     errorDetails = ResponseMessages;
   }
 
@@ -402,12 +436,21 @@ function formatPrimitiveError(error) {
 }
 
 const formatZodError = (err) => {
+  console.error('[FORMAT_ZOD_ERROR] - Raw error:', err);
+  if (err instanceof z.ZodError) {
+    console.error('[FORMAT_ZOD_ERROR] - Zod issues:', err.issues);
+  } else {
+    console.error('[FORMAT_ZOD_ERROR] - Not a ZodError instance');
+  }
+
   const errors =
     err instanceof z.ZodError ? err.issues.map((issue) => issue.message) : [];
 
   // Create a more descriptive message that includes the specific validation errors
   const errorMessage =
     errors.length > 0 ? `${errors.join(', ')}` : 'Validation failed';
+
+  console.error('[FORMAT_ZOD_ERROR] - Final error message:', errorMessage);
 
   return {
     data: null,
