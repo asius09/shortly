@@ -7,8 +7,20 @@ import { useState } from "react";
 import { LoginFormSchema } from "@/schema/loginForm.schema";
 import { errorHandler, handleZodErros } from "@/utils/errorHandler";
 import { useToast } from "./ui/Toast";
+import { handleLogin } from "@/lib/user.api";
+import { useUser } from "@/context/user";
+import { IconLoader } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 export const LoginForm = () => {
+  const { setUser, user } = useUser();
+  const router = useRouter();
+
+  if (user) {
+    router.push("/");
+    return null;
+  }
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -27,33 +39,35 @@ export const LoginForm = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login form submitted with values:", form);
     setLoading(true);
     setErrors({});
     try {
-      console.log("Handling Submitting Login Form");
       const parsed = LoginFormSchema.parse(form);
-      console.log("Validation successful:", parsed);
+      const response = await handleLogin({
+        email: parsed.email,
+        password: parsed.password,
+      });
 
-      setTimeout(() => {
-        setForm({
-          email: "",
-          password: "",
-        });
-        console.log("Form reset after login simulation");
-        addToast({
-          id: Date.now(),
-          message: "Logged in successfully!",
-          type: "success",
-        });
-      }, 2000);
+      const user = await response.data.user;
+      setUser({
+        id: String(user._id),
+        email: user.email,
+        fullName: user.fullName,
+      });
+      setForm({
+        email: "",
+        password: "",
+      });
+      addToast({
+        id: Date.now(),
+        message: "Logged in successfully!",
+        type: "success",
+      });
     } catch (err: unknown) {
-      console.log("Error during login submit:", err);
       const fieldErrors = handleZodErros(err);
       if (Object.keys(fieldErrors).length > 0) {
-        console.log("Field errors found:", fieldErrors);
         setErrors(fieldErrors);
         addToast({
           id: Date.now(),
@@ -62,7 +76,6 @@ export const LoginForm = () => {
         });
       } else {
         const general = errorHandler(err);
-        console.log("General error:", general);
         setErrors((prev) => ({ ...prev, general }));
         addToast({
           id: Date.now(),
@@ -72,7 +85,6 @@ export const LoginForm = () => {
       }
     } finally {
       setLoading(false);
-      console.log("Loading state set to false");
     }
   };
 
@@ -91,6 +103,7 @@ export const LoginForm = () => {
             required
             onChange={handleInputs}
             error={errors.email}
+            disabled={loading}
           />
           <Input
             label="Password"
@@ -101,15 +114,33 @@ export const LoginForm = () => {
             required
             onChange={handleInputs}
             error={errors.password}
+            disabled={loading}
           />
-          <Button className="w-full" type="submit">
-            Login
+          <Button
+            className="flex w-full items-center justify-center"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <IconLoader className="animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
           </Button>
         </div>
         <div className="mt-2 flex justify-end">
           <Link
             href="/forgot-password"
-            className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+            className={`text-sm hover:underline ${
+              loading
+                ? "pointer-events-none text-neutral-400 dark:text-neutral-500"
+                : "text-blue-600 dark:text-blue-400"
+            }`}
+            tabIndex={loading ? -1 : 0}
+            aria-disabled={loading}
           >
             Forgot password?
           </Link>
@@ -120,8 +151,18 @@ export const LoginForm = () => {
         <span className="text-neutral-600 dark:text-neutral-300">
           Don&apos;t have an account?
         </span>
-        <Link href="/signup" className="w-full">
-          <Button variant="outline" type="button" className="w-full">
+        <Link
+          href="/signup"
+          className="w-full"
+          tabIndex={loading ? -1 : 0}
+          aria-disabled={loading}
+        >
+          <Button
+            variant="outline"
+            type="button"
+            className="w-full"
+            disabled={loading}
+          >
             Sign Up
           </Button>
         </Link>
