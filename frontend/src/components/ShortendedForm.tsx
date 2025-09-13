@@ -6,8 +6,23 @@ import { useToast } from "./ui/Toast";
 import { errorHandler, handleZodErros } from "@/utils/errorHandler";
 import { ShortenedFormSchema } from "@/schema/shortenedForm.schema";
 import { Card, CardDescription, CardTitle } from "./ui/Card";
+import { IconLoader } from "@tabler/icons-react";
+import { createUrl } from "@/lib/url.api";
+import { useUser } from "@/context/user";
+import { useRouter } from "next/navigation";
+import { CopyUrlDialog } from "./CopyUrlDialog";
+import { useDialog } from "./ui/Dialog";
 
 export const ShortendedForm = () => {
+  const { open } = useDialog();
+
+  const { user } = useUser();
+  const router = useRouter();
+
+  if (!user) {
+    router.push("/login");
+    return null;
+  }
   const [form, setForm] = useState({
     originalUrl: "",
     alias: "",
@@ -34,19 +49,47 @@ export const ShortendedForm = () => {
     e.stopPropagation();
     setLoading(true);
     setErrors({});
+    if (!user.id) {
+      setLoading(false);
+      setErrors((prev) => ({
+        ...prev,
+        general: "User information is missing. Please log in again.",
+      }));
+      addToast({
+        id: Date.now(),
+        message: "User information is missing. Please log in again.",
+        type: "error",
+      });
+      return;
+    }
     try {
-      ShortenedFormSchema.parse({ ...form, createAt: Date.now() });
-      setTimeout(() => {
-        setForm({
-          originalUrl: "",
-          alias: "",
-        });
-        addToast({
-          id: Date.now(),
-          message: "Created shortened URL successfully!",
-          type: "success",
-        });
-      }, 2000);
+      const parse = ShortenedFormSchema.parse({
+        ...form,
+        createAt: Date.now(),
+      });
+
+      const url = await createUrl({
+        originalUrl: parse.originalUrl,
+        alias: parse.alias,
+        userId: user.id,
+      });
+
+      open({
+        title: "Shortened URL Copied!",
+        description: "Your shortened URL is ready to use.",
+        content: <CopyUrlDialog shortenedUrl={url.shortUrl} />,
+      });
+
+      setForm({
+        originalUrl: "",
+        alias: "",
+      });
+
+      addToast({
+        id: Date.now(),
+        message: "Created shortened URL successfully!",
+        type: "success",
+      });
     } catch (err: unknown) {
       const fieldErrors = handleZodErros(err);
       if (Object.keys(fieldErrors).length > 0) {
@@ -90,6 +133,7 @@ export const ShortendedForm = () => {
             onChange={handleChange}
             error={errors.originalUrl}
             type="url"
+            disabled={loading}
           />
           <Input
             placeholder="Enter a custom alias (e.g. my-link)"
@@ -100,13 +144,22 @@ export const ShortendedForm = () => {
             onChange={handleChange}
             error={errors.alias}
             type="text"
+            disabled={loading}
           />
           <Button
             className="w-full"
             aria-label="Generate shortened link"
             type="submit"
+            disabled={loading}
           >
-            Generate
+            {loading ? (
+              <>
+                <IconLoader className="animate-spin" />
+                Generating...
+              </>
+            ) : (
+              "Generate"
+            )}
           </Button>
           <div className="mt-2 w-full text-center">
             <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
