@@ -3,13 +3,15 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { CopyButton } from "./CopyButton";
 import { Card } from "./ui/Card";
-import { getUrls } from "@/lib/url.api";
+import { deleteUrl, getUrls } from "@/lib/url.api";
 import { UrlType } from "@/types/url.type";
 import { useUser } from "@/context/user";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/Button";
-import { IconTrashFilled } from "@tabler/icons-react";
+import { IconLoader, IconTrashFilled } from "@tabler/icons-react";
 import { ToolTip } from "./ui/ToolTip";
+import { errorHandler } from "@/utils/errorHandler";
+import { useToast } from "./ui/Toast";
 
 // Helper to calculate "Expire In" (days left, max 7 days)
 function getExpireIn(createdAt: string): string {
@@ -32,6 +34,7 @@ function getExpireIn(createdAt: string): string {
 export const LinkTable = () => {
   const { user } = useUser();
   const router = useRouter();
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (!user) {
@@ -44,7 +47,9 @@ export const LinkTable = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log(links);
+  // Add delete loading state
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   useEffect(() => {
     if (!userId) {
       setLoading(false);
@@ -100,9 +105,32 @@ export const LinkTable = () => {
   }
 
   const handleDelete = async (link: UrlType) => {
-    if (window.confirm("Are you sure you want to delete this link?")) {
+    if (!link._id || !userId) {
+      addToast({
+        id: Date.now(),
+        message: "Invalid link. Cannot delete.",
+        type: "error",
+      });
+      return;
+    }
+    setDeletingId(link._id);
+    try {
+      await deleteUrl(link._id, userId!);
       setLinks((prev) => prev.filter((l) => l._id !== link._id));
-      // TODO: Call deleteUrl API
+      addToast({
+        id: Date.now(),
+        message: "Link deleted successfully.",
+        type: "success",
+      });
+    } catch (err: unknown) {
+      const error = errorHandler(err);
+      addToast({
+        id: Date.now(),
+        message: error,
+        type: "error",
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -200,8 +228,13 @@ export const LinkTable = () => {
                           variant="destructive"
                           onClick={() => handleDelete(link)}
                           type="button"
+                          disabled={deletingId === link._id}
                         >
-                          <IconTrashFilled size={16} />
+                          {deletingId === link._id ? (
+                            <IconLoader size={16} className="animate-spin" />
+                          ) : (
+                            <IconTrashFilled size={16} />
+                          )}
                         </Button>
                       </ToolTip>
                     </div>
@@ -289,9 +322,14 @@ export const LinkTable = () => {
                     variant="destructive"
                     onClick={() => handleDelete(link)}
                     type="button"
+                    disabled={deletingId === link._id}
                   >
-                    <IconTrashFilled size={16} className="mr-1" />
-                    Delete
+                    {deletingId === link._id ? (
+                      <IconLoader size={16} className="animate-spin" />
+                    ) : (
+                      <IconTrashFilled size={16} className="mr-1" />
+                    )}
+                    {deletingId === link._id ? "Deleting..." : "Delete"}
                   </Button>
                 </div>
               </div>
@@ -375,9 +413,14 @@ export const LinkTable = () => {
                   variant="destructive"
                   onClick={() => handleDelete(link)}
                   type="button"
+                  disabled={deletingId === link._id}
                 >
-                  <IconTrashFilled size={14} className="mr-1" />
-                  Delete
+                  {deletingId === link._id ? (
+                    <IconLoader size={16} className="animate-spin" />
+                  ) : (
+                    <IconTrashFilled size={14} className="mr-1" />
+                  )}
+                  {deletingId === link._id ? "Deleting..." : "Delete"}
                 </Button>
               </div>
             </div>
