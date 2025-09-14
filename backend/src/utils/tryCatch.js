@@ -7,7 +7,6 @@ const tryCatch = (fn) => {
         return result;
       }
     } catch (error) {
-      console.log(`[TRY CATCH] - ERROR: ${error}`);
       next(error);
     }
   };

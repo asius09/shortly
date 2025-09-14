@@ -156,14 +156,16 @@ function formatMongoServerError(error) {
     }
     if (error.keyValue) {
       duplicateValues = Object.entries(error.keyValue).map(
-        ([field, value]) => `${field}: "${value}"`
+        ([field, value]) => `${field}: "${value}"`,
       );
     }
 
     // Compose a specific message
     if (duplicateFields.length > 0 && duplicateValues.length > 0) {
       message = `Duplicate entry for ${duplicateValues.join(', ')}. Please use a different value.`;
-      errorDetails = [`Duplicate value for field(s): ${duplicateFields.join(', ')}`];
+      errorDetails = [
+        `Duplicate value for field(s): ${duplicateFields.join(', ')}`,
+      ];
     } else if (error.message && error.message.includes('email')) {
       message = ResponseMessages.EMAIL_ALREADY_EXISTS;
       errorDetails = [ResponseMessages.EMAIL_ALREADY_EXISTS];
@@ -392,11 +394,8 @@ function formatPrimitiveError(error) {
 }
 
 const formatZodError = (err) => {
-  console.error('[FORMAT_ZOD_ERROR] - Raw error:', err);
   if (err instanceof z.ZodError) {
-    console.error('[FORMAT_ZOD_ERROR] - Zod issues:', err.issues);
   } else {
-    console.error('[FORMAT_ZOD_ERROR] - Not a ZodError instance');
   }
 
   const errors =
@@ -405,8 +404,6 @@ const formatZodError = (err) => {
   // Create a more descriptive message that includes the specific validation errors
   const errorMessage =
     errors.length > 0 ? `${errors.join(', ')}` : 'Validation failed';
-
-  console.error('[FORMAT_ZOD_ERROR] - Final error message:', errorMessage);
 
   return {
     data: null,

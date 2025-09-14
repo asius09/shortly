@@ -22,22 +22,13 @@ async function verifyToken(token) {
 }
 
 const handleJwtTokens = async (user) => {
-  console.log(
-    '[handleJwtTokens.js] - handleJwtTokens: Starting token generation for user:',
-    user._id,
-  );
   // Generate JWT token
   const token = createToken({
     id: user._id,
     tokenVersion: user.tokenVersion,
   });
-  console.log(
-    '[handleJwtTokens.js] - handleJwtTokens: JWT token created successfully',
-  );
+
   const refreshToken = await user.createRefreshToken();
-  console.log(
-    '[handleJwtTokens.js] - handleJwtTokens: Refresh token created successfully',
-  );
   return { token, refreshToken };
 };
 
