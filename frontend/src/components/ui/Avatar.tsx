@@ -6,6 +6,34 @@ import { handleLogout } from "@/lib/user.api";
 import { errorHandler } from "@/utils/errorHandler";
 import { Button } from "./Button";
 
+// Tailwind color classes for avatar backgrounds and text
+const AVATAR_BG_CLASSES = [
+  "bg-orange-500",
+  "bg-pink-500",
+  "bg-blue-500",
+  "bg-green-500",
+  "bg-yellow-500",
+  "bg-purple-500",
+  "bg-red-500",
+  "bg-sky-500",
+  "bg-emerald-500",
+  "bg-amber-500",
+  "bg-indigo-500",
+  "bg-rose-500",
+];
+const AVATAR_TEXT_CLASS = "text-white";
+
+// Pick a color class based on the user's name (stable for same name)
+function getAvatarBgClass(name: string | undefined): string {
+  if (!name) return AVATAR_BG_CLASSES[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const idx = Math.abs(hash) % AVATAR_BG_CLASSES.length;
+  return AVATAR_BG_CLASSES[idx];
+}
+
 function getFirstLetter(fullName: string | undefined) {
   return fullName && fullName.length > 0 ? fullName[0].toUpperCase() : "?";
 }
@@ -82,11 +110,12 @@ export const AvatarDesktop: React.FC = () => {
 
   if (!user) return null;
   const firstLetter = getFirstLetter(user.fullName);
+  const avatarBgClass = getAvatarBgClass(user.fullName);
 
   return (
     <div className="relative hidden md:inline-block" ref={popoverRef}>
       <button
-        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-neutral-900 bg-white text-lg font-bold text-neutral-900 transition select-none hover:bg-neutral-100 focus:ring-neutral-100 focus:outline-none dark:border-white dark:bg-neutral-900 dark:text-white"
+        className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-neutral-200 text-lg font-bold transition select-none focus:ring-neutral-100 focus:outline-none ${avatarBgClass} ${AVATAR_TEXT_CLASS} shadow-sm`}
         onClick={() => setOpen((prev) => !prev)}
         aria-label="User menu"
         type="button"
@@ -126,11 +155,14 @@ export const AvatarMobile: React.FC = () => {
   const { user } = useUser();
   if (!user) return null;
   const firstLetter = getFirstLetter(user.fullName);
+  const avatarBgClass = getAvatarBgClass(user.fullName);
 
   return (
     <div className="flex w-full items-center gap-3 px-2 py-3 sm:hidden">
       <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-900 bg-white text-lg font-bold text-neutral-900 dark:border-white dark:bg-neutral-900 dark:text-white">
+        <span
+          className={`flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-lg font-bold shadow-sm ${avatarBgClass} ${AVATAR_TEXT_CLASS}`}
+        >
           {firstLetter}
         </span>
         <div className="flex flex-col">
