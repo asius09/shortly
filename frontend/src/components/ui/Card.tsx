@@ -9,7 +9,7 @@ export function CardTitle({ children, className, ...props }: CardTitleProps) {
   return (
     <h1
       className={cn(
-        "mb-1 block text-center text-2xl leading-tight font-bold tracking-tight text-neutral-900 dark:text-neutral-100",
+        "mb-1 block text-center text-xl leading-tight font-bold tracking-tight text-neutral-900 sm:text-2xl dark:text-neutral-100",
         className,
       )}
       tabIndex={0}
@@ -34,7 +34,7 @@ export function CardDescription({
   return (
     <p
       className={cn(
-        "mb-6 block text-center text-sm font-medium text-neutral-700 dark:text-neutral-300",
+        "mb-6 block text-center text-sm font-medium text-neutral-700 sm:text-base dark:text-neutral-300",
         className,
       )}
       tabIndex={0}
@@ -54,8 +54,8 @@ export function Card({ children, className, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "h-auto w-md max-w-lg min-w-sm",
-        "rounded-2xl border p-4",
+        "h-auto w-full max-w-lg",
+        "rounded-2xl border p-4 sm:p-6",
         "border-neutral-200 bg-neutral-100 shadow-lg shadow-neutral-200/60",
         "dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-2xl dark:shadow-white/4",
         "flex flex-col items-center justify-center",

@@ -94,13 +94,17 @@ export default async function RootLayout({
         <UserProvider initialUser={user}>
           <main
             id="shortly-app"
-            className="min-svh relative mx-auto flex h-dvh max-h-screen w-full max-w-4xl flex-col items-center justify-start bg-neutral-100 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100"
+            className="min-h-screen relative w-full bg-neutral-100 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100"
           >
-            <ToastProvider>
-              <Header />
-              <DialogProvider>{children}</DialogProvider>
-            </ToastProvider>
-            <Footer />
+            <div className="mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-start px-4 sm:px-6 lg:px-8">
+              <ToastProvider>
+                <Header />
+                <div className="w-full max-w-6xl mx-auto flex-1">
+                  <DialogProvider>{children}</DialogProvider>
+                </div>
+              </ToastProvider>
+              <Footer />
+            </div>
           </main>
         </UserProvider>
       </body>
