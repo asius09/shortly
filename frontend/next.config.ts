@@ -4,7 +4,7 @@ module.exports = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:8000/api/:path*", // Proxy to Express backend
+        destination: "https://shortly-5zij.onrender.com/api/:path*", // Proxy to Express backend
       },
     ];
   },
