@@ -9,7 +9,7 @@ const logger = require('./middleware/logger');
 const { Status, StatusCode, ResponseMessages } = require('./constant');
 const createError = require('./helper/createError');
 const cookieParser = require('cookie-parser');
-const { handleRedirectUrl } = require('./controllers/url.contoller');
+const { handleRedirectUrl } = require('./controllers/url.controller');
 
 const PORT = config.port;
 

@@ -6,7 +6,7 @@ const {
   handleCreateURL,
   handleUpdateURL,
   handleDeleteURL,
-} = require('../controllers/url.contoller');
+} = require('../controllers/url.controller');
 const router = express.Router();
 
 router.use(authMiddleware);
