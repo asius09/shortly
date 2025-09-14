@@ -42,4 +42,6 @@ app.all('/*splat', (req, res, next) => {
 // Central Error Handler
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(PORT, () => {
+  // Server started successfully
+});

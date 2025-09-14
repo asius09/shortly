@@ -9,14 +9,9 @@ const handleCreateURL = tryCatch(async (req, res, next) => {
   const user = req.user;
   const body = req.body;
 
-  console.log('handleCreateURL called with user:', user, 'and body:', body);
-
   const createdUrl = await Url.create({ ...body, user: user._id });
 
-  console.log('Created URL:', createdUrl);
-
   if (!createdUrl) {
-    console.error('URL creation failed');
     next(
       createError({
         message: ResponseMessages.URL_CREATE_FAILED,
@@ -41,12 +36,8 @@ const handleGetURL = tryCatch(async (req, res, next) => {
   const user = req.user;
   const urlId = req.urlId;
 
-  console.log('handleGetURL called with user:', user, 'and urlId:', urlId);
-
   if (urlId) {
     const foundedUrl = await validateUrlById(urlId, req, res, next);
-
-    console.log('Found URL by id:', foundedUrl);
 
     return responseHandler(
       {
@@ -61,10 +52,7 @@ const handleGetURL = tryCatch(async (req, res, next) => {
 
   const allUrl = await Url.find({ user: user._id });
 
-  console.log('All URLs for user:', allUrl);
-
   if (!allUrl) {
-    console.error('No URLs found for user');
     return next(
       createError({
         message: ResponseMessages.INTERNAL_ERROR,
@@ -88,10 +76,7 @@ const handleUpdateURL = tryCatch(async (req, res, next) => {
   const user = req.user;
   const body = req.body;
 
-  console.log('handleUpdateURL called with user:', user, 'and body:', body);
-
   if (body.user !== user._id) {
-    console.error('User ID mismatch:', body.user, user._id);
     return next(
       createError({
         message: ResponseMessages.INVALID_INPUT,
@@ -103,14 +88,9 @@ const handleUpdateURL = tryCatch(async (req, res, next) => {
 
   const foundedUrl = await validateUrlById(body.id, next);
 
-  console.log('Found URL to update:', foundedUrl);
-
   const updatedUrl = await Url.updateOne({ ...body, _id: foundedUrl._id });
 
-  console.log('Update result:', updatedUrl);
-
   if (!updatedUrl) {
-    console.error('URL update failed');
     return next(
       createError({
         message: ResponseMessages.URL_UPDATE_FAILED,
@@ -132,18 +112,12 @@ const handleUpdateURL = tryCatch(async (req, res, next) => {
 });
 
 const handleDeleteURL = tryCatch(async (req, res, next) => {
-  console.log('handleDeleteURL calling');
   const user = req.user;
   const urlId = req.urlId;
 
-  console.log('handleDeleteURL called with user:', user, 'and urlId:', urlId);
-
   const foundedUrl = await validateUrlById(urlId, next);
 
-  console.log('Found URL to delete:', foundedUrl);
-
   if (String(foundedUrl.user) !== String(user._id)) {
-    console.error('User ID mismatch for delete:', foundedUrl.user, user._id);
     return next(
       createError({
         message: ResponseMessages.INVALID_INPUT,
@@ -155,10 +129,7 @@ const handleDeleteURL = tryCatch(async (req, res, next) => {
 
   const deletedUrl = await Url.deleteOne({ _id: foundedUrl._id });
 
-  console.log('Delete result:', deletedUrl);
-
   if (!deletedUrl) {
-    console.error('URL delete failed');
     return next(
       createError({
         message: ResponseMessages.URL_DELETE_FAILED,

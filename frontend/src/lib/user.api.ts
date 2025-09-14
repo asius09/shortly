@@ -22,14 +22,9 @@ export const handleSignup = async ({
     const res = await axios.post("/api/signup", { email, password, fullName });
     return res.data;
   } catch (err: unknown) {
-    // Log the full error for debugging
-    console.log("Signup Handle err", err);
-
     // Pass the whole error to errorHandler, not err.data
     const errorMsg = errorHandler(err);
 
-    // Optionally log for debugging
-    console.log(`Signup error: ${errorMsg}`);
     throw new Error(errorMsg);
   }
 };
@@ -54,8 +49,6 @@ export const handleLogin = async ({
     return res.data;
   } catch (err) {
     const errorMsg = errorHandler(err);
-    // Optionally log for debugging
-    console.log(`Login error: ${errorMsg}`);
     throw new Error(errorMsg);
   }
 };
@@ -74,8 +67,6 @@ export const handleDeleteUser = async (userId: string) => {
     return res.data;
   } catch (err) {
     const errorMsg = errorHandler(err);
-    // Optionally log for debugging
-    console.log(`Delete user error: ${errorMsg}`);
     throw new Error(errorMsg);
   }
 };
@@ -94,8 +85,6 @@ export const handleLogout = async (userId: string) => {
     return res.data;
   } catch (err) {
     const errorMsg = errorHandler(err);
-    // Optionally log for debugging
-    console.log(`Logout error: ${errorMsg}`);
     throw new Error(errorMsg);
   }
 };

@@ -3,13 +3,6 @@ const { z } = require('zod');
 
 // Main function that orchestrates all error formatting
 const formatErrorMessage = (error) => {
-  console.error('[FORMAT_ERROR] - Raw error received:', error);
-  console.error('[FORMAT_ERROR] - Error type:', typeof error);
-  console.error(
-    '[FORMAT_ERROR] - Error constructor:',
-    error?.constructor?.name,
-  );
-
   // Special handling for errors created by createError.js
   if (
     error instanceof Error &&
@@ -32,7 +25,6 @@ const formatErrorMessage = (error) => {
 
   // Check error type and parse accordingly
   const errorType = getErrorType(error);
-  console.log('[FORMAT_ERROR] - Detected error type:', errorType);
 
   // Format based on error type
   switch (errorType) {
@@ -147,17 +139,12 @@ const formatFallbackError = () => {
 
 // Handle MongoDB server errors with specific duplicate key info
 function formatMongoServerError(error) {
-  console.log('[MONGO_SERVER_ERROR] - Processing error:', error);
-  console.log('[MONGO_SERVER_ERROR] - Error code:', error.code);
-  console.log('[MONGO_SERVER_ERROR] - Error statusCode:', error.statusCode);
-
   let message = '';
   let status = Status.ERROR;
   let statusCode = StatusCode.INTERNAL_ERROR;
   let errorDetails = [];
 
   if (error.code === 11000 || error.statusCode === 11000) {
-    console.log('[MONGO_SERVER_ERROR] - Duplicate key error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
 
@@ -187,22 +174,17 @@ function formatMongoServerError(error) {
       message = ResponseMessages.DUPLICATE_ENTRY;
       errorDetails = [ResponseMessages.DUPLICATE_ENTRY];
     }
-
-    console.log('[MONGO_SERVER_ERROR] - Duplicate error details:', errorDetails);
   } else if (error.code === 11001 || error.statusCode === 11001) {
-    console.log('[MONGO_SERVER_ERROR] - Duplicate data error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
     message = ResponseMessages.DUPLICATE_ENTRY;
     errorDetails = [ResponseMessages.DUPLICATE_ENTRY];
   } else if (error.code === 121 || error.statusCode === 121) {
-    console.log('[MONGO_SERVER_ERROR] - Document validation error detected');
     statusCode = StatusCode.BAD_REQUEST;
     status = Status.FAILED;
     message = ResponseMessages.INVALID_INPUT;
     errorDetails = [ResponseMessages.INVALID_INPUT];
   } else {
-    console.log('[MONGO_SERVER_ERROR] - Unknown MongoDB error, using default');
     statusCode = StatusCode.INTERNAL_ERROR;
     status = Status.ERROR;
     message = ResponseMessages.SOMETHING_WENT_WRONG;
@@ -217,18 +199,12 @@ function formatMongoServerError(error) {
     error: errorDetails,
   };
 
-  console.log('[MONGO_SERVER_ERROR] - Final result:', result);
   return result;
 }
 
 // Handle MongoDB errors
 function formatMongoError(error) {
-  console.log('[MONGO_ERROR] - Processing error:', error);
-  console.log('[MONGO_ERROR] - Error code:', error.code);
-  console.log('[MONGO_ERROR] - Error statusCode:', error.statusCode);
-
   if (error.code === 11000 || error.statusCode === 11000) {
-    console.log('[MONGO_ERROR] - Duplicate key error detected');
     const errorMessage = error.message || '';
     let errorDetails = [];
 
@@ -248,12 +224,10 @@ function formatMongoError(error) {
       error: errorDetails,
     };
 
-    console.log('[MONGO_ERROR] - Duplicate error result:', result);
     return result;
   }
 
   // Return default error response instead of null
-  console.log('[MONGO_ERROR] - Using default error response');
   return {
     data: null,
     message: ResponseMessages.SOMETHING_WENT_WRONG,
@@ -265,9 +239,6 @@ function formatMongoError(error) {
 
 // Handle validation errors
 function formatValidationError(error) {
-  console.log('[VALIDATION_ERROR] - Processing error:', error);
-  console.log('[VALIDATION_ERROR] - Error message:', error.message);
-
   const result = {
     data: null,
     message: ResponseMessages.INVALID_INPUT,
@@ -276,15 +247,11 @@ function formatValidationError(error) {
     error: error.message,
   };
 
-  console.log('[VALIDATION_ERROR] - Result:', result);
   return result;
 }
 
 // Handle cast errors
 function formatCastError(error) {
-  console.log('[CAST_ERROR] - Processing error:', error);
-  console.log('[CAST_ERROR] - Error message:', error.message);
-
   const result = {
     data: null,
     message: ResponseMessages.INVALID_INPUT,
@@ -293,16 +260,11 @@ function formatCastError(error) {
     error: ResponseMessages.INVALID_INPUT,
   };
 
-  console.log('[CAST_ERROR] - Result:', result);
   return result;
 }
 
 // Handle JWT errors
 function formatJWTError(error) {
-  console.log('[JWT_ERROR] - Processing error:', error);
-  console.log('[JWT_ERROR] - Error name:', error.name);
-  console.log('[JWT_ERROR] - Error message:', error.message);
-
   if (error.name === 'JsonWebTokenError') {
     const result = {
       data: null,
@@ -311,7 +273,6 @@ function formatJWTError(error) {
       statusCode: StatusCode.UNAUTHORIZED,
       error: ResponseMessages.INVALID_TOKEN,
     };
-    console.log('[JWT_ERROR] - Invalid token result:', result);
     return result;
   } else if (error.name === 'TokenExpiredError') {
     const result = {
@@ -321,12 +282,10 @@ function formatJWTError(error) {
       statusCode: StatusCode.UNAUTHORIZED,
       error: 'Please login again',
     };
-    console.log('[JWT_ERROR] - Token expired result:', result);
     return result;
   }
 
   // Return default JWT error response instead of null
-  console.log('[JWT_ERROR] - Using default JWT error response');
   return {
     data: null,
     message: 'Authentication failed',
@@ -338,9 +297,6 @@ function formatJWTError(error) {
 
 // Handle custom error objects
 function formatCustomError(error) {
-  console.log('[CUSTOM_ERROR] - Processing error:', error);
-  console.log('[CUSTOM_ERROR] - Error keys:', Object.keys(error));
-
   let message = error.message || ResponseMessages.INTERNAL_ERROR;
   let status = Status.ERROR;
   let statusCode = StatusCode.INTERNAL_ERROR;

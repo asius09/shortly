@@ -39,42 +39,26 @@ export const SignupForm = () => {
       ...prev,
       [e.target.name]: "",
     }));
-    console.log("Input changed:", e.target.name, e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
     setErrors({});
-    console.log("Submitting form with values:", form);
     try {
       // Validate with zod
-      console.log("Attempting to validate form:", form);
       const parse = SignupFormSchema.parse(form);
-      console.log("Validation successful, parsed values:", parse);
 
-      console.log("Calling handleSignup with:", {
-        email: parse.email,
-        fullName: parse.fullName,
-        password: parse.password,
-      });
       const response = await handleSignup({
         email: parse.email,
         fullName: parse.fullName,
         password: parse.password,
       });
-      console.log("Signup API response:", response);
 
       const user = response.data.user;
-      console.log("User received from API:", user);
 
       setUser({
         id: String(user._id),
-        email: user.email,
-        fullName: user.fullName,
-      });
-      console.log("User set in context:", {
-        id: user.id,
         email: user.email,
         fullName: user.fullName,
       });
@@ -84,7 +68,6 @@ export const SignupForm = () => {
         email: "",
         password: "",
       });
-      console.log("Form reset to initial state");
 
       addToast({
         id: Date.now(),
@@ -92,9 +75,7 @@ export const SignupForm = () => {
         type: "success",
       });
     } catch (err: unknown) {
-      console.log(err);
       const fieldErrors = handleZodErros(err);
-      console.log(fieldErrors);
       if (Object.keys(fieldErrors).length > 0) {
         setErrors(fieldErrors);
       } else {
@@ -108,7 +89,6 @@ export const SignupForm = () => {
       }
     } finally {
       setSubmitting(false);
-      console.log("Submitting state set to false");
     }
   };
 

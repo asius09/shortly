@@ -8,7 +8,9 @@ const API_BASE = "/api/urls";
 
 export async function getUrls(userId?: string) {
   try {
-    const url = userId ? `${API_BASE}?user=${encodeURIComponent(userId)}` : API_BASE;
+    const url = userId
+      ? `${API_BASE}?user=${encodeURIComponent(userId)}`
+      : API_BASE;
     const res = await axios.get(url, { withCredentials: true });
     return res.data;
   } catch (err: any) {
@@ -16,11 +18,9 @@ export async function getUrls(userId?: string) {
   }
 }
 
-export async function getUrlById(id: string, userId?: string) {
+export async function getUrlById(id: string, userId: string) {
   try {
-    const url = userId
-      ? `${API_BASE}/${encodeURIComponent(id)}?user=${encodeURIComponent(userId)}`
-      : `${API_BASE}/${encodeURIComponent(id)}`;
+    const url = `${API_BASE}?user=${encodeURIComponent(userId)}&id=${encodeURIComponent(id)}`;
     const res = await axios.get(url, { withCredentials: true });
     return res.data;
   } catch (err: any) {
@@ -50,7 +50,7 @@ export async function updateUrl(
   data: Partial<Pick<UrlType, "originalUrl" | "alias">>,
 ) {
   try {
-    const url = `${API_BASE}/${encodeURIComponent(id)}?user=${encodeURIComponent(userId)}`;
+    const url = `${API_BASE}?user=${encodeURIComponent(userId)}&id=${encodeURIComponent(id)}`;
     const res = await axios.put(url, data, { withCredentials: true });
     return res.data;
   } catch (err: any) {
@@ -58,14 +58,11 @@ export async function updateUrl(
   }
 }
 
-export async function deleteUrl(
-  id: string,
-  userId: string,
-) {
+export async function deleteUrl(id: string, userId: string) {
   try {
-    const url = `${API_BASE}/${encodeURIComponent(id)}?user=${encodeURIComponent(userId)}`;
+    const url = `${API_BASE}?user=${encodeURIComponent(userId)}&id=${encodeURIComponent(id)}`;
     const res = await axios.delete(url, { withCredentials: true });
-    return res.data;
+    return res.data.data;
   } catch (err: any) {
     throw new Error(err.response?.data?.message || "Failed to delete URL");
   }
