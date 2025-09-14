@@ -18,11 +18,6 @@ export const ShortendedForm = () => {
   const { user } = useUser();
   const router = useRouter();
 
-  if (!user) {
-    router.push("/login");
-    return null;
-  }
-
   const [form, setForm] = useState({
     originalUrl: "",
     alias: "",
@@ -48,7 +43,7 @@ export const ShortendedForm = () => {
     e.stopPropagation();
     setLoading(true);
     setErrors({});
-    if (!user.id) {
+    if (!user?.id) {
       setLoading(false);
       setErrors((prev) => ({
         ...prev,
@@ -108,6 +103,11 @@ export const ShortendedForm = () => {
       setLoading(false);
     }
   };
+
+  if (!user) {
+    router.push("/login");
+    return null;
+  }
 
   return (
     <Card>

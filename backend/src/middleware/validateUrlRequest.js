@@ -62,13 +62,3 @@ const validateUrlRequestBody = tryCatch(async (req, res, next) => {
 });
 
 module.exports = validateUrlRequest;
-
-/**
- * Route Handling:
- *
- * GET All    - /URL?userId=                  (validates user)
- * GET One    - /URL?userId=&id=              (validates user and url)
- * DELETE One - /URL?userId=&id=              (validates user and url, id required)
- * POST Create- /URL?userId=   {body:}        (validates user and body)
- * PUT Update - /URL?userId=   {body:}        (validates user and body)
- */

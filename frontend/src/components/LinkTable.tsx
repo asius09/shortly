@@ -63,8 +63,8 @@ export const LinkTable = () => {
         const response = await getUrls(userId);
         const data = response.data;
         setLinks(Array.isArray(data) ? data : []);
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch links");
+      } catch (err: unknown) {
+        setError(errorHandler(err) || "Failed to fetch links");
       } finally {
         setLoading(false);
       }
@@ -249,7 +249,7 @@ export const LinkTable = () => {
       {/* Tablet View */}
       <div className="hidden md:block lg:hidden">
         <div className="space-y-4">
-          {links.map((link, idx) => (
+          {links.map((link) => (
             <Card key={link._id} className="w-full p-6">
               <div className="space-y-4">
                 {/* Short URL */}
@@ -340,7 +340,7 @@ export const LinkTable = () => {
 
       {/* Mobile Card View */}
       <div className="block space-y-4 md:hidden">
-        {links.map((link, idx) => (
+        {links.map((link) => (
           <Card key={link._id} className="w-full p-4">
             <div className="space-y-4">
               {/* Short URL */}

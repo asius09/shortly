@@ -17,10 +17,6 @@ export const SignupForm = () => {
 
   const router = useRouter();
 
-  if (user) {
-    router.push("/");
-    return null;
-  }
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -91,6 +87,11 @@ export const SignupForm = () => {
       setSubmitting(false);
     }
   };
+
+  if (user) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <Card>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { IconBrandGithub, IconMenu2, IconX } from "@tabler/icons-react";
 import { Button } from "./ui/Button";
 import { useUser } from "@/context/user";
-import { Avatar, AvatarDesktop, AvatarMobile, LogoutButton } from "./ui/Avatar";
+import { AvatarDesktop, AvatarMobile, LogoutButton } from "./ui/Avatar";
 import { useState } from "react";
 
 const navLinks = [
@@ -161,7 +161,11 @@ export const Header = () => {
               {/* Show auth buttons for smaller devices only (when not logged in) */}
               {!user && (
                 <div className="flex w-full flex-col gap-2 md:hidden">
-                  <Link href="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    href="/login"
+                    className="w-full"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Button
                       variant="outline"
                       className="w-full px-2 py-2 text-xs font-medium"
@@ -170,7 +174,11 @@ export const Header = () => {
                       Login
                     </Button>
                   </Link>
-                  <Link href="/signup" className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    href="/signup"
+                    className="w-full"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Button
                       className="w-full px-2 py-2 text-xs font-medium"
                       type="button"

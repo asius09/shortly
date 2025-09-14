@@ -69,9 +69,14 @@ export const errorHandler = (err: unknown): string => {
   }
 
   if (typeof err === "object" && err !== null) {
-    const maybeAxios = err as any;
-    if (maybeAxios.response && maybeAxios.response.data) {
-      const data = maybeAxios.response.data;
+    // Try to infer Axios-like error shape, but use unknown instead of any
+    const maybeAxios = err as { response?: { data?: unknown } };
+    if (
+      maybeAxios.response &&
+      typeof maybeAxios.response === "object" &&
+      maybeAxios.response.data
+    ) {
+      const data = maybeAxios.response.data as Record<string, unknown>;
       if (
         typeof data.statusCode === "number" &&
         data.statusCode >= 400 &&
@@ -89,13 +94,14 @@ export const errorHandler = (err: unknown): string => {
       }
     }
 
+    // Check for direct error object with statusCode/message/error
     if (
       "statusCode" in err &&
-      typeof (err as any).statusCode === "number" &&
-      (err as any).statusCode >= 400 &&
-      (err as any).statusCode < 500
+      typeof (err as { statusCode?: unknown }).statusCode === "number" &&
+      (err as { statusCode: number }).statusCode >= 400 &&
+      (err as { statusCode: number }).statusCode < 500
     ) {
-      const e = err as any;
+      const e = err as { message?: unknown; error?: unknown };
       if (typeof e.message === "string" && e.message) {
         return makeUserFriendly(e.message);
       }
@@ -119,7 +125,7 @@ export const errorHandler = (err: unknown): string => {
 };
 
 export const handleZodErros = (err: unknown): { [key: string]: string } => {
-  let fieldErrors: { [key: string]: string } = {};
+  const fieldErrors: { [key: string]: string } = {};
   if (err instanceof z.ZodError) {
     for (const error of err.issues) {
       const key =

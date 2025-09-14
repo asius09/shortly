@@ -16,11 +16,6 @@ export const LoginForm = () => {
   const { setUser, user } = useUser();
   const router = useRouter();
 
-  if (user) {
-    router.push("/");
-    return null;
-  }
-
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -87,6 +82,11 @@ export const LoginForm = () => {
       setLoading(false);
     }
   };
+
+  if (user) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <Card>

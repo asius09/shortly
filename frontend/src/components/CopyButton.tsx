@@ -11,7 +11,12 @@ interface CopyButtonProps extends ButtonProps {
   iconOnly?: boolean;
 }
 
-export function CopyButton({ text, className, iconOnly = false, ...props }: CopyButtonProps) {
+export function CopyButton({
+  text,
+  className,
+  iconOnly = false,
+  ...props
+}: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   // Tooltip content logic

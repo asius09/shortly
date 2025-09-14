@@ -1,5 +1,6 @@
 import axios from "axios";
 import { UrlType } from "@/types/url.type";
+import { errorHandler } from "@/utils/errorHandler";
 
 // Use the same API base as in next.config.js rewrites
 const API_BASE = "/api/urls";
@@ -13,8 +14,8 @@ export async function getUrls(userId?: string) {
       : API_BASE;
     const res = await axios.get(url, { withCredentials: true });
     return res.data;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || "Failed to fetch URLs");
+  } catch (err: unknown) {
+    throw errorHandler(err || "Failed to fetch URLs");
   }
 }
 
@@ -23,8 +24,8 @@ export async function getUrlById(id: string, userId: string) {
     const url = `${API_BASE}?user=${encodeURIComponent(userId)}&id=${encodeURIComponent(id)}`;
     const res = await axios.get(url, { withCredentials: true });
     return res.data;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || "Failed to fetch URL");
+  } catch (err: unknown) {
+    throw errorHandler(err || "Failed to fetch URL");
   }
 }
 
@@ -39,8 +40,8 @@ export async function createUrl(data: {
     const url = `${API_BASE}?user=${encodeURIComponent(userId)}`;
     const res = await axios.post(url, rest, { withCredentials: true });
     return res.data;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || "Failed to create URL");
+  } catch (err: unknown) {
+    throw errorHandler(err || "Failed to create URL");
   }
 }
 
@@ -53,8 +54,8 @@ export async function updateUrl(
     const url = `${API_BASE}?user=${encodeURIComponent(userId)}&id=${encodeURIComponent(id)}`;
     const res = await axios.put(url, data, { withCredentials: true });
     return res.data;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || "Failed to update URL");
+  } catch (err: unknown) {
+    throw errorHandler(err || "Failed to update URL");
   }
 }
 
@@ -63,7 +64,7 @@ export async function deleteUrl(id: string, userId: string) {
     const url = `${API_BASE}?user=${encodeURIComponent(userId)}&id=${encodeURIComponent(id)}`;
     const res = await axios.delete(url, { withCredentials: true });
     return res.data.data;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || "Failed to delete URL");
+  } catch (err: unknown) {
+    throw errorHandler(err || "Failed to delete URL");
   }
 }

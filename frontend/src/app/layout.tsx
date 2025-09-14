@@ -72,7 +72,7 @@ async function fetchUserServer(): Promise<{
       };
     }
     return null;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -94,12 +94,12 @@ export default async function RootLayout({
         <UserProvider initialUser={user}>
           <main
             id="shortly-app"
-            className="min-h-screen relative w-full bg-neutral-100 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100"
+            className="relative min-h-screen w-full bg-neutral-100 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100"
           >
             <div className="mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-start px-4 sm:px-6 lg:px-8">
               <ToastProvider>
                 <Header />
-                <div className="w-full max-w-6xl mx-auto flex-1">
+                <div className="mx-auto w-full max-w-6xl flex-1">
                   <DialogProvider>{children}</DialogProvider>
                 </div>
               </ToastProvider>

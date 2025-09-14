@@ -16,7 +16,10 @@ type UserProviderProps = {
   initialUser?: User;
 };
 
-export const UserProvider = ({ children, initialUser = null }: UserProviderProps) => {
+export const UserProvider = ({
+  children,
+  initialUser = null,
+}: UserProviderProps) => {
   const [user, setUser] = useState<User>(initialUser);
 
   return (

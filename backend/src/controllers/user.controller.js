@@ -6,7 +6,7 @@ const { handleJwtTokens } = require('../utils/jwtToken');
 const responseHandler = require('../utils/responseHandler');
 
 const handleSignup = tryCatch(async (req, res) => {
-  const createdUser = await User.create(req.body); // Create user in database
+  const createdUser = await User.create(req.body);
   const { token, refreshToken } = await handleJwtTokens(createdUser);
 
   const responseData = {
